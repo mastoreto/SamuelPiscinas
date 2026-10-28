@@ -3,15 +3,6 @@
 
 import type { IconName } from '../components/ui/Icon.astro';
 
-// Promesas que Samuel puede cumplir. Cuando haya cifras reales (años, piscinas),
-// pueden volver a la franja del hero.
-export const trustItems: { icon: IconName; title: string; text: string }[] = [
-  { icon: 'shield-check', title: 'Presupuesto gratis', text: 'Precio cerrado antes de empezar' },
-  { icon: 'clock', title: 'Respuesta en 24 h', text: 'En días laborables' },
-  { icon: 'user', title: 'Trato directo', text: 'Hablás siempre con Samuel' },
-  { icon: 'map-pin', title: 'Montevideo, Canelones y San José', text: 'Zona de servicio' },
-];
-
 // Lecturas de ejemplo del informe de visita. La posición de cada marca se calcula
 // sobre la escala [min, max]; el tramo [okMin, okMax] es el rango correcto.
 export type Reading = {
@@ -162,3 +153,31 @@ export const footerColumns = [
 ];
 
 export const legalLinks = [{ href: '/privacidad', label: 'Privacidad' }];
+
+// TODO(cliente): borrador de preguntas frecuentes; que Samuel confirme cada respuesta.
+export const faqs = [
+  {
+    q: '¿Cada cuánto vienen a mi piscina?',
+    a: 'Hacemos visitas semanales o quincenales, según el tamaño de la piscina y cuánto se use.',
+  },
+  {
+    q: '¿Tiene costo el presupuesto?',
+    a: 'No. El presupuesto es sin cargo y te damos un precio cerrado antes de empezar.',
+  },
+  {
+    q: '¿Cuánto tardan en recuperar una piscina con agua verde?',
+    a: 'Normalmente en 48 horas, con tratamiento de choque, filtrado y aspirado hasta dejarla cristalina.',
+  },
+  {
+    q: '¿En qué zonas trabajan?',
+    a: 'En Montevideo, Canelones y San José. Podés verificar tu dirección en el buscador de zonas.',
+  },
+  {
+    q: '¿Atienden clubes y piscinas colectivas?',
+    a: 'Sí. Armamos planes con libro de registro al día, controles del agua y analíticas de laboratorio.',
+  },
+  {
+    q: '¿Cómo hago una consulta?',
+    a: 'Por WhatsApp o con el formulario de presupuesto. Respondemos en 24 horas laborables, de lunes a viernes de 8 a 18 h.',
+  },
+] as const;

@@ -48,9 +48,15 @@
     cursor: pointer;
   }
 
-  /* Que el header sticky no tape el título al saltar a un ancla */
+  /* Al saltar a un ancla, la sección queda justo bajo el header sticky (4.5 rem + borde en móvil,
+     5.25 rem + borde en escritorio): ni tapa el título ni deja ver un trozo de la sección anterior. */
   [id] {
-    scroll-margin-top: 6rem;
+    scroll-margin-top: calc(4.5rem + 1px);
+  }
+  @media (min-width: 64rem) {
+    [id] {
+      scroll-margin-top: calc(5.25rem + 1px);
+    }
   }
 
   /* Superficies del navegador teñidas con la paleta */

@@ -1,16 +1,15 @@
 ---
 import { Image } from 'astro:assets';
-import { trustItems } from '../../data/home';
-import { images, site, whatsappHref } from '../../data/site';
+import { contact, images, site, whatsappHref } from '../../data/site';
 import videoWebm from '../../assets/background-videos/bg-light-2.webm?url';
 import videoMp4 from '../../assets/background-videos/bg-light-2-res.mp4?url';
 import Button from '../ui/Button.astro';
 import Container from '../ui/Container.astro';
-import Icon from '../ui/Icon.astro';
+import Icon, { type IconName } from '../ui/Icon.astro';
 ---
 
-<section id="inicio" class="hero-bg pb-4">
-  <div class="relative -mt-[calc(4.5rem+1px)] flex min-h-svh items-center overflow-hidden pt-18 pb-32 lg:-mt-[calc(5.25rem+1px)] lg:pt-21">
+<section id="inicio" class="hero-bg">
+  <div class="relative -mt-[calc(4.5rem+1px)] flex min-h-svh flex-col overflow-hidden pt-24 pb-24 sm:pb-10 lg:-mt-[calc(5.25rem+1px)] lg:pt-28">
     <Image
       src={images.pool}
       alt="Piscina desbordante con el agua cristalina"
@@ -25,9 +24,9 @@ import Icon from '../ui/Icon.astro';
       <source src={videoMp4} type="video/mp4" />
     </video>
 
-    <Container class="relative grid items-center gap-8 text-white lg:grid-cols-[auto_1fr] lg:gap-20">
+    <Container class="relative my-auto grid w-full items-center pb-8 gap-8 text-white lg:grid-cols-[auto_auto] lg:justify-center lg:gap-16">
       <!-- Sello giratorio: el texto da la vuelta alrededor del isotipo -->
-      <div class="relative grid size-64 shrink-0 place-items-center rounded-full bg-white shadow-card lg:size-[30rem]" role="img" aria-label={`${site.name}, servicio integral`}>
+      <div class="relative grid size-32 shrink-0 place-items-center rounded-full bg-white shadow-card lg:size-72" role="img" aria-label={`${site.name}, servicio integral`}>
         <svg viewBox="0 0 132 132" class="hero-seal absolute inset-0 size-full" aria-hidden="true">
           <defs>
             <path id="seal-ring" d="M66 66 m-52 0 a52 52 0 1 1 104 0 a52 52 0 1 1 -104 0"></path>
@@ -40,15 +39,15 @@ import Icon from '../ui/Icon.astro';
       </div>
 
       <div class="flex max-w-3xl flex-col items-start gap-8">
-        <h1 class="[text-shadow:0_2px_20px_rgb(0_0_0/0.45)] text-5xl leading-none font-extrabold sm:text-7xl lg:text-8xl">
-          Cuidamos tu piscina para que vos <span class="underline decoration-brand-light-cyan decoration-[0.07em] underline-offset-[0.12em]">solo tengas que disfrutarla.</span>
+        <h1 class="[text-shadow:0_2px_4px_rgb(7_26_46/0.35),0_0_36px_rgb(7_26_46/0.5)] text-5xl leading-none font-extrabold sm:text-7xl lg:text-8xl">
+          Cuidamos tu piscina para que vos <span class="underline decoration-brand-light-cyan decoration-[0.07em] underline-offset-[0.1em] [text-decoration-skip-ink:none]">solo tengas que disfrutarla.</span>
         </h1>
 
         <div class="flex flex-wrap items-center gap-3">
-          <Button href="#contacto" variant="light" size="lg" class="text-lg">Pedir presupuesto</Button>
+          <Button href="#contacto" variant="primary" size="lg">Pedir presupuesto</Button>
           <Button
             href={whatsappHref()}
-            variant="ghost"
+            variant="whatsapp"
             size="lg"
             target="_blank"
             rel="noopener noreferrer"
@@ -59,22 +58,26 @@ import Icon from '../ui/Icon.astro';
         </div>
       </div>
     </Container>
-  </div>
 
-  <Container>
-    <!-- Franja de confianza superpuesta a la foto -->
-    <ul class="shadow-float relative z-10 mx-auto -mt-16 grid w-[calc(100%-2rem)] max-w-5xl overflow-hidden rounded-2xl bg-white sm:grid-cols-2 lg:grid-cols-4">
-      {trustItems.map((item) => (
-        <li class="hover:bg-brand-mist flex items-start gap-3.5 border-t border-sky-100 p-6 transition-colors first:border-t-0 sm:nth-[2]:border-t-0 sm:nth-[n+3]:border-t lg:border-t-0 lg:border-l lg:first:border-l-0">
-          <span class="bg-brand-sky flex size-11 shrink-0 items-center justify-center rounded-xl">
-            <Icon name={item.icon} class="text-brand-blue size-5.5" />
-          </span>
-          <div>
-            <p class="text-brand-navy font-extrabold">{item.title}</p>
-            <p class="mt-0.5 text-sm text-slate-600">{item.text}</p>
-          </div>
-        </li>
-      ))}
-    </ul>
-  </Container>
+    <!-- Promesas y guía para seguir bajando, ancladas al borde inferior -->
+    <div class="relative flex flex-col items-center gap-6 px-6 text-white">
+      <ul class="flex flex-wrap justify-center gap-x-5 gap-y-1 rounded-2xl bg-brand-navy/60 px-7 py-3.5 text-center text-sm font-semibold backdrop-blur-md sm:text-base">
+        {[
+          { icon: 'shield-check', text: 'Presupuesto sin cargo', cls: '' },
+          { icon: 'clock', text: 'Respuesta en 24 h', cls: '' },
+          { icon: 'user', text: 'Hablás directo con Samuel', cls: 'hidden sm:flex' },
+          { icon: 'map-pin', text: contact.zone, cls: 'hidden sm:flex' },
+        ].map((item) => (
+          <li class:list={['flex items-center gap-2 lg:not-first:border-l lg:not-first:border-white/40 lg:not-first:pl-5', item.cls]}>
+            <Icon name={item.icon as IconName} class="text-brand-light-cyan size-5 shrink-0" />
+            {item.text}
+          </li>
+        ))}
+      </ul>
+      <a href="#por-que-samuel" class="hidden flex-col items-center sm:flex gap-1 text-xs [text-shadow:0_1px_10px_rgb(7_26_46/0.6)] font-bold tracking-wide uppercase">
+        Conocé cómo trabajamos
+        <svg viewBox="0 0 24 24" class="size-5 motion-safe:animate-bounce" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M19 9l-7 7-7-7"></path></svg>
+      </a>
+    </div>
+  </div>
 </section>

@@ -1,40 +1,65 @@
 ---
+import { Image } from 'astro:assets';
 import { services } from '../../data/home';
+import { images } from '../../data/site';
 import ServiceCard from '../cards/ServiceCard.astro';
 import Button from '../ui/Button.astro';
 import Container from '../ui/Container.astro';
+import Icon from '../ui/Icon.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
+
+// El mantenimiento es el servicio principal; el resto van en la cuadrícula.
+const [main, ...others] = services;
 ---
 
-<section id="servicios" class="bg-brand-mist py-20 lg:py-26">
+<section id="servicios" class="mx-3 rounded-[2rem] sm:mx-5 lg:rounded-[2.5rem] bg-brand-mist py-20 lg:py-26">
   <Container>
-    <div class="mx-auto mb-12 flex max-w-3xl flex-col gap-4 text-center lg:mb-14">
+    <div class="mb-12 grid items-end gap-6 lg:mb-14 lg:grid-cols-2 lg:gap-16">
       <SectionHeading>Todo lo que necesita tu piscina, durante todo el año</SectionHeading>
-      <p class="mx-auto max-w-xl text-lg text-slate-600">
+      <p class="max-w-xl text-lg text-slate-600">
         Del mantenimiento semanal a la reparación de equipos. Cada trabajo se presupuesta sin cargo,
         según tu piscina.
       </p>
     </div>
 
-    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
-      {services.map((service) => (
-        <ServiceCard {...service} />
-      ))}
-    </div>
+    <div class="grid gap-5 lg:grid-cols-[1fr_2fr]">
+      <!-- Servicio principal -->
+      <article class="shadow-soft relative flex min-h-96 flex-col justify-end overflow-hidden rounded-[2rem] p-8 text-white lg:min-h-0">
+        <Image
+          src={images.pool}
+          alt=""
+          widths={[480, 800, 1200]}
+          sizes="(min-width: 1024px) 33vw, 100vw"
+          class="absolute inset-0 size-full object-cover"
+        />
+        <div class="from-brand-navy/90 via-brand-navy/45 absolute inset-0 bg-linear-to-t to-transparent"></div>
+        <span class="absolute top-8 left-8 flex size-12 items-center justify-center rounded-xl bg-white/15 backdrop-blur-md">
+          <Icon name={main.icon} class="size-6" />
+        </span>
+        <div class="relative flex flex-col items-start gap-3">
+          <span class="rounded-full bg-white/15 px-3 py-1 text-xs font-bold tracking-wide uppercase backdrop-blur-md">
+            Servicio principal
+          </span>
+          <h3 class="text-3xl leading-tight font-extrabold">{main.title}</h3>
+          <p class="leading-relaxed text-white/85">{main.description}</p>
+          <Button href="#contacto" variant="light" size="lg" class="mt-2">Pedir presupuesto</Button>
+        </div>
+      </article>
 
-    <!-- Banner para clubes y piscinas colectivas -->
-    <div class="from-brand-deep to-brand-navy shadow-soft mt-10 flex flex-col items-start justify-between gap-6 rounded-4xl bg-linear-to-r p-8 lg:flex-row lg:items-center lg:px-12 lg:py-11">
-      <div class="flex flex-col gap-2.5">
-        <h3 class="text-2xl font-extrabold text-white lg:text-[1.75rem]">
-          Planes para clubes deportivos y piscinas colectivas
-        </h3>
-        <p class="max-w-2xl leading-relaxed text-slate-300">
-          Libro de registro al día, controles del agua y analíticas de laboratorio.
-        </p>
+      <div class="grid gap-5 sm:grid-cols-2">
+        {others.map((service) => (
+          <ServiceCard {...service} />
+        ))}
+
+        <!-- Clubes y piscinas colectivas -->
+        <div class="from-brand-deep to-brand-navy shadow-soft flex flex-col gap-3 rounded-[1.75rem] bg-linear-to-br p-7 text-white">
+          <h3 class="pt-8 text-lg font-extrabold">Planes para clubes y piscinas colectivas</h3>
+          <p class="text-[0.9375rem] leading-relaxed text-slate-300">
+            Libro de registro al día, controles del agua y analíticas de laboratorio.
+          </p>
+          <Button href="#contacto" variant="light" class="mt-2 self-start">Pedir cotización</Button>
+        </div>
       </div>
-      <Button href="#contacto" variant="light" size="lg">
-        Pedir presupuesto
-      </Button>
     </div>
   </Container>
 </section>
