@@ -1,0 +1,271 @@
+---
+import { poolTypes, serviceOptions } from '../../data/home';
+import { contact } from '../../data/site';
+
+// URL del formulario de Formspree (https://formspree.io/f/xxxx) en .env: PUBLIC_FORMSPREE_URL.
+// Si falta, el formulario funciona igual solo por WhatsApp.
+const formspreeUrl = import.meta.env.PUBLIC_FORMSPREE_URL ?? '';
+
+const labelClass = 'mb-2 block text-sm font-bold text-slate-700';
+const fieldClass =
+  'focus:border-brand-cyan focus:ring-brand-cyan text-brand-navy w-full rounded-2xl border-slate-300 px-4 py-3.5 text-[0.9375rem] placeholder:text-slate-500';
+---
+
+<div class="rounded-5xl border border-sky-100 bg-white p-7 shadow-2xl sm:p-11">
+  <h3 class="text-brand-navy mb-6 text-2xl font-extrabold">Solicitud de presupuesto</h3>
+
+  <!--
+    Abre WhatsApp con el mensaje redactado y, si hay PUBLIC_FORMSPREE_URL, envía además una copia
+    por email a través de Formspree. WhatsApp se abre primero: tras un await el navegador bloquearía la ventana.
+  -->
+  <form
+    class="space-y-5"
+    aria-describedby="form-error"
+    data-lead-form
+    data-formspree={formspreeUrl}
+    data-whatsapp={contact.whatsappNumber}
+    novalidate
+  >
+    <fieldset>
+      <legend class={labelClass}>Tipo de piscina</legend>
+      <div class="grid grid-cols-3 gap-2.5">
+        {poolTypes.map((type, i) => (
+          <label class="cursor-pointer">
+            <input
+              type="radio"
+              name="tipo"
+              value={type.label}
+              checked={i === 0}
+              class="peer sr-only"
+            />
+            <span class="peer-checked:border-brand-cyan peer-checked:text-brand-deep peer-focus-visible:ring-brand-cyan block rounded-2xl border border-slate-200 p-3 text-center text-sm font-semibold text-slate-700 transition-colors peer-checked:bg-sky-50 peer-checked:font-bold peer-focus-visible:ring-2">
+              {type.label}
+            </span>
+          </label>
+        ))}
+      </div>
+    </fieldset>
+
+    <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+      <div>
+        <label class={labelClass} for="nombre">
+          Nombre
+        </label>
+        <input
+          class={fieldClass}
+          id="nombre"
+          name="nombre"
+          maxlength="100"
+          type="text"
+          autocomplete="name"
+          placeholder="Tu nombre"
+          required
+        />
+      </div>
+      <div>
+        <label class={labelClass} for="telefono">
+          Teléfono
+        </label>
+        <input
+          class={fieldClass}
+          id="telefono"
+          name="telefono"
+          maxlength="100"
+          type="tel"
+          autocomplete="tel"
+          placeholder="Para llamarte o escribirte"
+          required
+        />
+      </div>
+      <div>
+        <label class={labelClass} for="localidad">
+          Localidad
+        </label>
+        <input
+          class={fieldClass}
+          id="localidad"
+          name="localidad"
+          maxlength="100"
+          type="text"
+          autocomplete="address-level2"
+          placeholder="Dónde está la piscina"
+          required
+        />
+      </div>
+      <div>
+        <label class={labelClass} for="servicio">
+          Qué necesitás
+        </label>
+        <select class={fieldClass} id="servicio" name="servicio" required>
+          <option value="">Elegí una opción</option>
+          {serviceOptions.map((option) => (
+            <option>{option}</option>
+          ))}
+        </select>
+      </div>
+    </div>
+
+    <div>
+      <label class={labelClass} for="mensaje">
+        Detalles (opcional)
+      </label>
+      <textarea
+        class={fieldClass}
+        id="mensaje"
+        name="mensaje"
+        rows="3"
+        maxlength="1000"
+        placeholder="Tamaño aproximado, si es de sal, qué le pasa..."
+      ></textarea>
+    </div>
+
+    <label class="flex items-start gap-3 text-sm leading-relaxed text-slate-600">
+      <input
+        type="checkbox"
+        name="privacidad"
+        required
+        class="text-brand-deep focus:ring-brand-cyan mt-0.5 size-4.5 rounded border-slate-300"
+      />
+      <span>
+        He leído la{' '}
+        <a href="/privacidad" target="_blank" class="text-brand-link font-semibold underline">
+          política de privacidad
+        </a>{' '}
+        y acepto que usen mis datos para responder a mi solicitud.
+      </span>
+    </label>
+
+    <p
+      class="hidden rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-800"
+      role="alert"
+      id="form-error"
+      data-form-error
+    ></p>
+
+    <!-- Trampa anti-spam: las personas no lo ven ni lo rellenan -->
+    <div class="hidden" aria-hidden="true">
+      <label>
+        No rellenar <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" />
+      </label>
+    </div>
+
+    <button
+      type="submit"
+      class="bg-brand-deep hover:bg-brand-blue shadow-fluid w-full rounded-full px-8 py-4 text-base font-bold text-white transition-colors active:translate-y-px disabled:opacity-60"
+    >
+      Pedir presupuesto
+    </button>
+
+    <p
+      class="hidden rounded-2xl bg-emerald-50 px-4 py-3 text-sm font-semibold text-emerald-800"
+      role="status"
+      data-form-ok
+    >
+      <span data-form-status>
+        Se ha abierto WhatsApp con tu mensaje. Solo tenés que pulsar Enviar.
+      </span>
+      <a
+        href="#"
+        class="text-brand-link block pt-1 underline"
+        target="_blank"
+        rel="noopener noreferrer"
+        data-form-fallback
+      >
+        ¿No se ha abierto? Tocá acá para abrir WhatsApp
+      </a>
+    </p>
+  </form>
+</div>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-lead-form]');
+  const error = form?.querySelector<HTMLElement>('[data-form-error]');
+  const ok = form?.querySelector<HTMLElement>('[data-form-ok]');
+  const status = form?.querySelector<HTMLElement>('[data-form-status]');
+  const submit = form?.querySelector<HTMLButtonElement>('button[type="submit"]');
+  const submitLabel = submit?.textContent ?? '';
+
+  form?.addEventListener('submit', (event) => {
+    event.preventDefault();
+    ok?.classList.add('hidden');
+
+    form.querySelectorAll('[aria-invalid]').forEach((el) => el.removeAttribute('aria-invalid'));
+    const invalid = form.querySelector<HTMLInputElement>(':invalid');
+    if (invalid) {
+      const messages: Record<string, string> = {
+        nombre: 'Falta tu nombre.',
+        telefono: 'Falta un teléfono para poder contestarte.',
+        localidad: 'Indicá en qué localidad está la piscina.',
+        servicio: 'Elegí qué necesitás en la lista.',
+        privacidad: 'Aceptá la política de privacidad para poder enviar la solicitud.',
+      };
+      form.querySelectorAll(':invalid').forEach((el) => el.setAttribute('aria-invalid', 'true'));
+      if (error) {
+        error.textContent = messages[invalid.name] ?? 'Revisa los campos obligatorios.';
+        error.classList.remove('hidden');
+      }
+      invalid.focus();
+      return;
+    }
+    error?.classList.add('hidden');
+
+    const data = new FormData(form);
+    const field = (name: string) => String(data.get(name) ?? '').trim();
+    // Formato de WhatsApp: *negrita* y viñetas, para que Samuel lo lea de un vistazo.
+    const lines = [
+      'Hola Samuel, te escribo desde la web para pedir un presupuesto.',
+      '',
+      '*Datos de contacto*',
+      `• Nombre: ${field('nombre')}`,
+      `• Teléfono: ${field('telefono')}`,
+      '',
+      '*Mi piscina*',
+      `• Tipo: ${field('tipo')}`,
+      `• Localidad: ${field('localidad')}`,
+      `• Necesito: ${field('servicio')}`,
+    ];
+    const details = field('mensaje');
+    if (details) lines.push('', '*Detalles*', details);
+    lines.push('', '¡Gracias!');
+
+    const url = `https://wa.me/${form.dataset.whatsapp}?text=${encodeURIComponent(lines.join('\n'))}`;
+    // Sin 'noopener' en features: con él window.open devuelve null siempre y no sabríamos si se bloqueó.
+    form.querySelector<HTMLAnchorElement>('[data-form-fallback]')?.setAttribute('href', url);
+    const tab = window.open(url, '_blank');
+    if (tab) tab.opener = null;
+    else window.location.href = url;
+    ok?.classList.remove('hidden');
+    const whatsappOnly = 'Se ha abierto WhatsApp con tu mensaje. Solo tenés que pulsar Enviar.';
+    if (status) status.textContent = whatsappOnly;
+
+    const endpoint = form.dataset.formspree;
+    if (!endpoint) return;
+
+    // Copia por email: si falla, el pedido igualmente llega por WhatsApp.
+    if (submit) {
+      submit.disabled = true;
+      submit.textContent = 'Enviando…';
+    }
+    fetch(endpoint, {
+      method: 'POST',
+      body: data,
+      headers: { Accept: 'application/json' },
+      signal: AbortSignal.timeout(10000),
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(String(res.status));
+        if (status)
+          status.textContent = `${whatsappOnly} También te hemos enviado la solicitud por email.`;
+      })
+      .catch(() => {
+        if (status)
+          status.textContent = `${whatsappOnly} El envío por email falló: confirma con el mensaje de WhatsApp.`;
+      })
+      .finally(() => {
+        if (submit) {
+          submit.disabled = false;
+          submit.textContent = submitLabel;
+        }
+      });
+  });
+</script>

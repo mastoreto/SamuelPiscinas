@@ -1,11 +1,40 @@
 ---
-import Welcome from '../components/Welcome.astro';
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import Contact from '../components/sections/Contact.astro';
+import Hero from '../components/sections/Hero.astro';
+import Portfolio from '../components/sections/Portfolio.astro';
+import Services from '../components/sections/Services.astro';
+import Zones from '../components/sections/Zones.astro';
+import WhyUs from '../components/sections/WhyUs.astro';
 import Layout from '../layouts/Layout.astro';
+import { site } from '../data/site';
 
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+// TODO(cliente): al tener datos reales, añadir telephone y openingHours.
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'HomeAndConstructionBusiness',
+  name: site.name,
+  url: Astro.site?.href,
+  description: site.description,
+  address: { '@type': 'PostalAddress', addressCountry: 'UY' },
+  areaServed: ['Montevideo', 'Canelones', 'San José'].map((name) => ({
+    '@type': 'AdministrativeArea',
+    name,
+  })),
+};
 ---
 
-<Layout>
-	<Welcome />
+<Layout jsonLd={jsonLd}>
+  <Header />
+  <main id="contenido">
+    <Hero />
+    <WhyUs />
+    <Services />
+    <Portfolio />
+    <Zones />
+    <!-- Opiniones: sin testimonios reales aún; volver a montar <Testimonials /> cuando los haya. -->
+    <Contact />
+  </main>
+  <Footer />
 </Layout>

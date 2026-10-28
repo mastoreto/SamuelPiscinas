@@ -1,0 +1,90 @@
+---
+// Animación del proceso: muestra → medición → ajuste. El marcado ya está en el estado final
+// (sin JS o con "reducir movimiento" se ve así); el script lo anima en bucle con Motion.
+import { sampleReadings } from '../../data/home';
+
+const pct = (v: number, min: number, max: number) => `${((v - min) / (max - min)) * 100}%`;
+---
+
+<div class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4" data-water-process>
+  <div class="flex items-center gap-3 text-sm font-semibold text-sky-200">
+    <svg viewBox="0 0 24 32" class="h-8 w-6 shrink-0" aria-hidden="true">
+      <defs><clipPath id="vial-clip"><path d="M8 3h8v7l5 15a3 3 0 01-3 4H6a3 3 0 01-3-4l5-15z"></path></clipPath></defs>
+      <rect data-vial-fill x="0" y="14" width="24" height="18" fill="#38bdf8" clip-path="url(#vial-clip)" style="transform-origin:bottom"></rect>
+      <path d="M8 3h8v7l5 15a3 3 0 01-3 4H6a3 3 0 01-3-4l5-15z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
+    </svg>
+    <span data-status>Agua equilibrada</span>
+  </div>
+
+  {sampleReadings.map((r) => (
+    <div class="grid grid-cols-[4.5rem_1fr_2.5rem] items-center gap-2.5 text-sm text-slate-200" data-reading data-from={r.from} data-to={r.value} data-min={r.min} data-max={r.max}>
+      <span>{r.label}</span>
+      <span class="relative h-1.5 rounded-full bg-white/10" aria-hidden="true">
+        <span
+          class="absolute inset-y-0 rounded-full bg-sky-400/45"
+          style={{
+            left: pct(r.okMin, r.min, r.max),
+            width: pct(r.okMax - r.okMin + r.min, r.min, r.max),
+          }}
+        />
+        <span
+          data-marker
+          class="absolute -top-1 h-3.5 w-1 -translate-x-1/2 rounded-sm bg-white"
+          style={{ left: pct(r.value, r.min, r.max) }}
+        />
+      </span>
+      <b class="text-right" data-value>{r.value.toLocaleString('es-UY')}</b>
+    </div>
+  ))}
+</div>
+
+<script>
+  import { animate } from 'motion';
+
+  const root = document.querySelector<HTMLElement>('[data-water-process]');
+  const status = root?.querySelector<HTMLElement>('[data-status]');
+  const vial = root?.querySelector<SVGElement>('[data-vial-fill]');
+
+  if (root && status && vial && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const rows = [...root.querySelectorAll<HTMLElement>('[data-reading]')].map((el) => {
+      const n = (k: string) => Number(el.dataset[k]);
+      const [from, to, min, max] = [n('from'), n('to'), n('min'), n('max')];
+      return {
+        from, to,
+        pos: (v: number) => `${((v - min) / (max - min)) * 100}%`,
+        marker: el.querySelector<HTMLElement>('[data-marker]')!,
+        value: el.querySelector<HTMLElement>('[data-value]')!,
+      };
+    });
+    const fmt = (v: number) => v.toLocaleString('es-UY', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
+    const wait = (s: number) => new Promise((r) => setTimeout(r, s * 1000));
+    const show = (visible: boolean) => rows.forEach((r) => animate([r.marker, r.value], { opacity: visible ? 1 : 0 }, { duration: 0.3 }));
+
+    const loop = async () => {
+      for (;;) {
+        // 1. muestra: la probeta se llena
+        status.textContent = 'Tomando muestra…';
+        rows.forEach((r) => { r.marker.style.left = r.pos(r.from); r.value.textContent = fmt(r.from); });
+        show(false);
+        await animate(vial, { transform: ['scaleY(0)', 'scaleY(1)'] }, { duration: 1.2, ease: 'easeOut' });
+        // 2. medición: aparecen los valores iniciales, fuera de rango
+        status.textContent = 'Midiendo…';
+        show(true);
+        await wait(1.3);
+        // 3. ajuste: las marcas se mueven hasta el rango correcto
+        status.textContent = 'Ajustando…';
+        await Promise.all(rows.flatMap((r, i) => [
+          animate(r.marker, { left: [r.pos(r.from), r.pos(r.to)] }, { duration: 1.8, delay: i * 0.25, ease: [0.22, 1, 0.36, 1] }),
+          animate(r.from, r.to, { duration: 1.8, delay: i * 0.25, ease: [0.22, 1, 0.36, 1], onUpdate: (v) => (r.value.textContent = fmt(v)) }),
+        ]));
+        status.textContent = 'Agua equilibrada';
+        await wait(3);
+      }
+    };
+
+    // Arranca sólo cuando la tarjeta es visible.
+    new IntersectionObserver(([e], io) => {
+      if (e.isIntersecting) { io.disconnect(); loop(); }
+    }).observe(root);
+  }
+</script>

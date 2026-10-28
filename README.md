@@ -1,46 +1,38 @@
-# Astro Starter Kit: Basics
+# Samuel Piscinas
 
-```sh
-bun create astro@latest -- --template basics
-```
+Web de una sola página (más la política de privacidad) para Samuel Piscinas, servicio de mantenimiento de piscinas en Uruguay. Astro 7 + Tailwind 4.
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+## Comandos
 
-## 🚀 Project Structure
+Requiere Node >= 22.12 y [bun](https://bun.sh).
 
-Inside of your Astro project, you'll see the following folders and files:
+| Comando          | Acción                             |
+| :--------------- | :--------------------------------- |
+| `bun install`    | Instala dependencias               |
+| `bun dev`        | Servidor local en `localhost:4321` |
+| `bun run build`  | Comprueba tipos y genera `dist/`   |
+| `bun run format` | Formatea con Prettier              |
 
-```text
-/
-├── public/
-│   └── favicon.svg
-├── src
-│   ├── assets
-│   │   └── astro.svg
-│   ├── components
-│   │   └── Welcome.astro
-│   ├── layouts
-│   │   └── Layout.astro
-│   └── pages
-│       └── index.astro
-└── package.json
-```
+## Dónde se edita cada cosa
 
-To learn more about the folder structure of an Astro project, refer to [our guide on project structure](https://docs.astro.build/en/basics/project-structure/).
+- `src/data/site.ts`: nombre, teléfono, WhatsApp, email, horario, zona e imágenes. Todo lo que va entre `[corchetes]` está pendiente de confirmar.
+- `src/data/home.ts`: servicios, textos y enlaces del pie.
+- `src/components/`: secciones, tarjetas, formulario y layout.
+- `src/pages/privacidad.astro`: política de privacidad (Ley 18.331); revisar antes de publicar.
+- `PRODUCT.md` y `DESIGN.md`: contexto de producto y sistema visual.
 
-## 🧞 Commands
+## Formulario
 
-All commands are run from the root of the project, from a terminal:
+Abre WhatsApp con el mensaje ya redactado y, si existe `PUBLIC_FORMSPREE_URL`, envía además una copia por email con [Formspree](https://formspree.io). Copia `.env.example` a `.env` y pon la URL; en Vercel, añádela en Settings → Environment Variables.
 
-| Command                   | Action                                           |
-| :------------------------ | :----------------------------------------------- |
-| `bun install`             | Installs dependencies                            |
-| `bun dev`             | Starts local dev server at `localhost:4321`      |
-| `bun build`           | Build your production site to `./dist/`          |
-| `bun preview`         | Preview your build locally, before deploying     |
-| `bun astro ...`       | Run CLI commands like `astro add`, `astro check` |
-| `bun astro -- --help` | Get help using the Astro CLI                     |
+## Despliegue
 
-## 👀 Want to learn more?
+Sitio estático: importar el repositorio en Vercel (detecta Astro). Antes de publicar:
 
-Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+1. Rellenar los `[corchetes]` (`grep -rn "\[" src/data`).
+2. Sustituir las fotos de `src/assets/ejemplo/` por fotos reales.
+3. Configurar `PUBLIC_FORMSPREE_URL` y el dominio `samuelpiscinas.com.uy`.
+
+## Créditos de las fotos de ejemplo
+
+Las imágenes de `src/assets/ejemplo/` son de Wikimedia Commons (CC BY-SA) y solo sirven para ver el diseño; hay que sustituirlas antes de publicar.

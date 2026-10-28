@@ -1,0 +1,44 @@
+---
+import { contact, whatsappHref } from '../../data/site';
+import ContactChannel from '../cards/ContactChannel.astro';
+import LeadForm from '../forms/LeadForm.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+
+<section id="contacto" class="bg-white py-20 lg:py-26">
+  <Container>
+    <div class="grid grid-cols-1 items-center gap-12 lg:grid-cols-12 lg:gap-14">
+      <div class="flex flex-col gap-7 lg:col-span-5">
+        <div class="flex flex-col gap-4">
+          <SectionHeading>Pedí tu presupuesto sin compromiso</SectionHeading>
+          <p class="text-lg leading-relaxed text-slate-600">
+            Contame qué piscina tenés y te respondo en 24 horas laborables con una propuesta.
+          </p>
+        </div>
+
+        <div class="flex flex-col gap-3">
+          <ContactChannel
+            icon="whatsapp"
+            tone="whatsapp"
+            label="WhatsApp, lo más rápido"
+            value={contact.whatsappDisplay}
+            href={whatsappHref()}
+          />
+          <ContactChannel
+            icon="mail"
+            label="Correo electrónico"
+            value={contact.email}
+            href={`mailto:${contact.email}`}
+          />
+        </div>
+
+        <p class="text-sm leading-relaxed text-slate-600">Horario: {contact.hours}</p>
+      </div>
+
+      <div class="lg:col-span-7">
+        <LeadForm />
+      </div>
+    </div>
+  </Container>
+</section>

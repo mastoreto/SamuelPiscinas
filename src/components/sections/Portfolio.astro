@@ -1,0 +1,142 @@
+---
+import { contact, images } from '../../data/site';
+import BeforeAfter from '../cards/BeforeAfter.astro';
+import StepCards from '../cards/StepCards.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+// TODO(cliente): fotos y pasos de EJEMPLO; sustituir por trabajos reales de Samuel.
+const { greenBefore, greenAfter, pool, community } = images;
+const photos = [pool, community, greenBefore, greenAfter];
+const steps = (items: [string, string][]) =>
+  items.map(([title, text], i) => ({ title, text, src: photos[i] }));
+
+const tabs = [
+  {
+    id: 'mantenimientos',
+    label: 'Mantenimientos',
+    title: 'Recuperación de agua verde',
+    text: 'Tratamiento de choque, filtrado y aspirado hasta dejar el agua cristalina.',
+    before: greenBefore,
+    after: greenAfter,
+    alt: 'Piscina tras el mantenimiento',
+    afterLabel: '48 h después',
+  },
+  {
+    id: 'instalaciones',
+    label: 'Instalaciones',
+    title: 'Instalación paso a paso',
+    text: 'Así trabajamos cada instalación de equipos, del relevamiento a la puesta en marcha.',
+    steps: steps([
+      ['Relevamiento', 'Vemos la piscina y el cuarto de máquinas, y pasamos un presupuesto cerrado.'],
+      ['Preparación', 'Cortamos el circuito y dejamos listo el lugar del equipo.'],
+      ['Instalación', 'Montamos y conectamos el equipo con sus válvulas y protecciones.'],
+      ['Puesta en marcha', 'Probamos, regulamos y te explicamos cómo usarlo.'],
+    ]),
+  },
+  {
+    id: 'arena',
+    label: 'Cambios de arena',
+    title: 'Cambio de arena del filtro',
+    text: 'Renovamos la arena del filtro para recuperar un buen filtrado del agua.',
+    note: true,
+    steps: steps([
+      ['Vaciado', 'Retiramos la arena vieja del filtro.'],
+      ['Revisión interna', 'Limpiamos el tanque y revisamos colector y difusores.'],
+      ['Carga de arena', 'Colocamos la arena nueva en la granulometría correcta.'],
+      ['Lavado y arranque', 'Hacemos el primer lavado y dejamos el filtro funcionando.'],
+    ]),
+  },
+  {
+    id: 'reparaciones',
+    label: 'Reparaciones',
+    title: 'Reparación de equipos y piscinas',
+    text: 'Bombas con fugas o ruido, filtros, focos y cuadros: diagnosticamos y dejamos todo funcionando.',
+    before: greenBefore,
+    after: greenAfter,
+    alt: 'Piscina tras la reparación',
+  },
+];
+---
+
+<section id="trabajos" class="bg-white py-20 lg:py-26">
+  <Container>
+    <div class="mb-10 flex max-w-2xl flex-col gap-4">
+      <SectionHeading>Así trabajo</SectionHeading>
+      <p class="text-lg text-slate-600">
+        Mantenimiento, agua verde y control del agua en {contact.zone}.
+      </p>
+    </div>
+
+    <div data-tabs>
+      <div role="tablist" aria-label="Tipos de trabajo" class="mb-8 flex gap-2 overflow-x-auto pb-1">
+        {tabs.map((tab, i) => (
+          <button
+            type="button"
+            role="tab"
+            id={`tab-${tab.id}`}
+            aria-controls={`panel-${tab.id}`}
+            aria-selected={i === 0 ? 'true' : 'false'}
+            tabindex={i === 0 ? 0 : -1}
+            class="text-brand-navy hover:bg-brand-mist aria-selected:bg-brand-navy shrink-0 rounded-full border border-slate-200 px-5 py-2.5 text-sm font-bold whitespace-nowrap transition-colors aria-selected:border-transparent aria-selected:text-white"
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      {tabs.map((tab, i) => (
+        <div role="tabpanel" id={`panel-${tab.id}`} aria-labelledby={`tab-${tab.id}`} hidden={i !== 0}>
+          {tab.steps ? (
+            <div class="flex flex-col gap-8">
+              <div class="max-w-2xl">
+                <h3 class="text-brand-navy text-2xl font-extrabold">{tab.title}</h3>
+                <p class="mt-2 text-slate-600">{tab.text}</p>
+              </div>
+              <StepCards steps={tab.steps} />
+            </div>
+          ) : (
+            <div class="grid items-center gap-8 lg:grid-cols-[1.4fr_1fr] lg:gap-12">
+              <BeforeAfter before={tab.before!} after={tab.after!} alt={tab.alt!} afterLabel={tab.afterLabel} />
+              <div>
+                <h3 class="text-brand-navy text-2xl font-extrabold">{tab.title}</h3>
+                <p class="mt-2 text-slate-600">{tab.text}</p>
+                <a href="#contacto" class="text-brand-link mt-5 inline-block text-sm font-bold hover:underline">
+                  Pedir presupuesto →
+                </a>
+              </div>
+            </div>
+          )}
+          {tab.note && (
+            <p class="bg-brand-sky text-brand-navy mt-8 rounded-2xl p-5 font-semibold">
+              Recomendamos la arena de cuarzo: mayor durabilidad y menos cambios a lo largo de los años.
+            </p>
+          )}
+        </div>
+      ))}
+    </div>
+  </Container>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-tabs]');
+  const tabs = [...(root?.querySelectorAll<HTMLElement>('[role=tab]') ?? [])];
+
+  const select = (tab: HTMLElement) => {
+    tabs.forEach((t) => {
+      const on = t === tab;
+      t.setAttribute('aria-selected', String(on));
+      t.tabIndex = on ? 0 : -1;
+      document.getElementById(t.getAttribute('aria-controls')!)!.hidden = !on;
+    });
+    tab.focus();
+  };
+
+  tabs.forEach((tab, i) => {
+    tab.addEventListener('click', () => select(tab));
+    tab.addEventListener('keydown', (e) => {
+      const step = { ArrowRight: 1, ArrowLeft: -1 }[e.key];
+      if (step) select(tabs[(i + step + tabs.length) % tabs.length]);
+    });
+  });
+</script>

@@ -1,0 +1,51 @@
+---
+// Tarjeta de "Por qué Samuel". La variante "featured" es la oscura: en vez de foto,
+// enseña lecturas de ejemplo sobre su rango correcto (el <slot/> recibe ReadingScale).
+import BulletList from '../ui/BulletList.astro';
+import Icon, { type IconName } from '../ui/Icon.astro';
+
+type Props = {
+  icon: IconName;
+  title: string;
+  description: string;
+  bullets?: readonly string[];
+  variant?: 'light' | 'featured';
+};
+
+const { icon, title, description, bullets, variant = 'light' } = Astro.props;
+const featured = variant === 'featured';
+---
+
+<article
+  class:list={[
+    'flex flex-col gap-4 rounded-4xl p-8 lg:p-9',
+    featured ? 'bg-brand-navy shadow-soft text-white' : 'border border-slate-100 bg-slate-50',
+  ]}
+>
+  <div
+    class:list={[
+      'flex size-14 items-center justify-center rounded-2xl',
+      featured ? 'bg-white/10 text-sky-300' : 'text-brand-link bg-sky-100',
+    ]}
+  >
+    <Icon name={icon} class="size-7" />
+  </div>
+
+  <h3 class:list={['text-xl font-extrabold', featured ? 'text-white' : 'text-brand-navy']}>
+    {title}
+  </h3>
+  <p class:list={['leading-relaxed', featured ? 'text-slate-300' : 'text-slate-600']}>
+    {description}
+  </p>
+
+  {bullets && (
+    <div class="mt-auto border-t border-slate-200 pt-5">
+      <BulletList items={bullets} />
+    </div>
+  )}
+  {featured && (
+    <div class="mt-auto">
+      <slot />
+    </div>
+  )}
+</article>

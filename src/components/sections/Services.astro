@@ -1,0 +1,40 @@
+---
+import { services } from '../../data/home';
+import ServiceCard from '../cards/ServiceCard.astro';
+import Button from '../ui/Button.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+
+<section id="servicios" class="bg-brand-mist py-20 lg:py-26">
+  <Container>
+    <div class="mx-auto mb-12 flex max-w-3xl flex-col gap-4 text-center lg:mb-14">
+      <SectionHeading>Todo lo que necesita tu piscina, durante todo el año</SectionHeading>
+      <p class="mx-auto max-w-xl text-lg text-slate-600">
+        Del mantenimiento semanal a la reparación de equipos. Cada trabajo se presupuesta sin cargo,
+        según tu piscina.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4">
+      {services.map((service) => (
+        <ServiceCard {...service} />
+      ))}
+    </div>
+
+    <!-- Banner para clubes y piscinas colectivas -->
+    <div class="from-brand-deep to-brand-navy shadow-soft mt-10 flex flex-col items-start justify-between gap-6 rounded-4xl bg-linear-to-r p-8 lg:flex-row lg:items-center lg:px-12 lg:py-11">
+      <div class="flex flex-col gap-2.5">
+        <h3 class="text-2xl font-extrabold text-white lg:text-[1.75rem]">
+          Planes para clubes deportivos y piscinas colectivas
+        </h3>
+        <p class="max-w-2xl leading-relaxed text-slate-300">
+          Libro de registro al día, controles del agua y analíticas de laboratorio.
+        </p>
+      </div>
+      <Button href="#contacto" variant="light" size="lg">
+        Pedir presupuesto
+      </Button>
+    </div>
+  </Container>
+</section>

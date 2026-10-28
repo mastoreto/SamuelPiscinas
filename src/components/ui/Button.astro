@@ -1,0 +1,41 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+type Variant = 'primary' | 'deep' | 'outline' | 'light' | 'ghost' | 'whatsapp';
+type Size = 'md' | 'lg';
+
+type Props = HTMLAttributes<'a'> & {
+  href: string;
+  variant?: Variant;
+  size?: Size;
+};
+
+const { href, variant = 'primary', size = 'md', class: className, ...rest } = Astro.props;
+
+const variants: Record<Variant, string> = {
+  primary: 'bg-brand-navy hover:bg-brand-blue text-white shadow-lg',
+  deep: 'bg-brand-deep hover:bg-brand-blue shadow-fluid text-white',
+  outline: 'text-brand-deep border border-slate-200 bg-white hover:border-brand-light-cyan',
+  light: 'bg-brand-light-cyan text-brand-navy hover:bg-white',
+  ghost: 'border border-white/55 text-white hover:border-white hover:bg-white/10',
+  whatsapp: 'bg-emerald-700 text-white hover:bg-emerald-800',
+};
+
+const sizes: Record<Size, string> = {
+  md: 'px-6 py-3.5 text-sm',
+  lg: 'px-7 py-4 text-base',
+};
+---
+
+<a
+  href={href}
+  class:list={[
+    'focus-visible:outline-brand-link inline-flex items-center justify-center gap-2 rounded-xl font-bold whitespace-nowrap transition-[color,background-color,border-color,translate] duration-150 ease-out outline-offset-2 focus-visible:outline-2 active:translate-y-px',
+    variants[variant],
+    sizes[size],
+    className,
+  ]}
+  {...rest}
+>
+  <slot />
+</a>

@@ -1,0 +1,80 @@
+---
+import { Image } from 'astro:assets';
+import { trustItems } from '../../data/home';
+import { images, site, whatsappHref } from '../../data/site';
+import videoWebm from '../../assets/background-videos/bg-light-2.webm?url';
+import videoMp4 from '../../assets/background-videos/bg-light-2-res.mp4?url';
+import Button from '../ui/Button.astro';
+import Container from '../ui/Container.astro';
+import Icon from '../ui/Icon.astro';
+---
+
+<section id="inicio" class="hero-bg pb-4">
+  <div class="relative -mt-[calc(4.5rem+1px)] flex min-h-svh items-center overflow-hidden pt-18 pb-32 lg:-mt-[calc(5.25rem+1px)] lg:pt-21">
+    <Image
+      src={images.pool}
+      alt="Piscina desbordante con el agua cristalina"
+      widths={[800, 1200, 1600, 2400]}
+      sizes="100vw"
+      loading="eager"
+      fetchpriority="high"
+      class="absolute inset-0 size-full object-cover object-[50%_60%]"
+    />
+    <video autoplay muted loop playsinline aria-hidden="true" class="absolute inset-0 size-full object-cover motion-reduce:hidden">
+      <source src={videoWebm} type="video/webm" />
+      <source src={videoMp4} type="video/mp4" />
+    </video>
+
+    <Container class="relative grid items-center gap-8 text-white lg:grid-cols-[auto_1fr] lg:gap-20">
+      <!-- Sello giratorio: el texto da la vuelta alrededor del isotipo -->
+      <div class="relative grid size-64 shrink-0 place-items-center rounded-full bg-white shadow-card lg:size-[30rem]" role="img" aria-label={`${site.name}, servicio integral`}>
+        <svg viewBox="0 0 132 132" class="hero-seal absolute inset-0 size-full" aria-hidden="true">
+          <defs>
+            <path id="seal-ring" d="M66 66 m-52 0 a52 52 0 1 1 104 0 a52 52 0 1 1 -104 0"></path>
+          </defs>
+          <text class="fill-brand-blue text-[11.5px] font-bold tracking-[0.17em] uppercase">
+            <textPath href="#seal-ring" textLength="323" lengthAdjust="spacing"><tspan fill="#28a6d1">Servicio integral</tspan> · Samuel Piscinas ·</textPath>
+          </text>
+        </svg>
+        <Image src={images.isotipo} alt="" width={120} class="relative w-[38%]" />
+      </div>
+
+      <div class="flex max-w-3xl flex-col items-start gap-8">
+        <h1 class="[text-shadow:0_2px_20px_rgb(0_0_0/0.45)] text-5xl leading-none font-extrabold sm:text-7xl lg:text-8xl">
+          Cuidamos tu piscina para que vos <span class="underline decoration-brand-light-cyan decoration-[0.07em] underline-offset-[0.12em]">solo tengas que disfrutarla.</span>
+        </h1>
+
+        <div class="flex flex-wrap items-center gap-3">
+          <Button href="#contacto" variant="light" size="lg" class="text-lg">Pedir presupuesto</Button>
+          <Button
+            href={whatsappHref()}
+            variant="ghost"
+            size="lg"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon name="whatsapp" class="size-5" />
+            Escribir por WhatsApp
+          </Button>
+        </div>
+      </div>
+    </Container>
+  </div>
+
+  <Container>
+    <!-- Franja de confianza superpuesta a la foto -->
+    <ul class="shadow-float relative z-10 mx-auto -mt-16 grid w-[calc(100%-2rem)] max-w-5xl overflow-hidden rounded-2xl bg-white sm:grid-cols-2 lg:grid-cols-4">
+      {trustItems.map((item) => (
+        <li class="hover:bg-brand-mist flex items-start gap-3.5 border-t border-sky-100 p-6 transition-colors first:border-t-0 sm:nth-[2]:border-t-0 sm:nth-[n+3]:border-t lg:border-t-0 lg:border-l lg:first:border-l-0">
+          <span class="bg-brand-sky flex size-11 shrink-0 items-center justify-center rounded-xl">
+            <Icon name={item.icon} class="text-brand-blue size-5.5" />
+          </span>
+          <div>
+            <p class="text-brand-navy font-extrabold">{item.title}</p>
+            <p class="mt-0.5 text-sm text-slate-600">{item.text}</p>
+          </div>
+        </li>
+      ))}
+    </ul>
+  </Container>
+</section>

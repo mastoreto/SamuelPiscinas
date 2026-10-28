@@ -1,0 +1,13 @@
+---
+type Props = { items: readonly string[] };
+const { items } = Astro.props;
+---
+
+<ul class="space-y-2.5 text-sm font-semibold text-slate-700">
+  {items.map((item) => (
+    <li class="flex items-center gap-2.5">
+      <span class="bg-brand-cyan size-1.5 shrink-0 rounded-full" />
+      {item}
+    </li>
+  ))}
+</ul>

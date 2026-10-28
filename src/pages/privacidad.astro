@@ -1,0 +1,57 @@
+---
+import Footer from '../components/layout/Footer.astro';
+import Header from '../components/layout/Header.astro';
+import Container from '../components/ui/Container.astro';
+import Layout from '../layouts/Layout.astro';
+import { contact, site } from '../data/site';
+---
+
+<!-- TODO(cliente): borrador basado en la Ley 18.331 (Uruguay); revisar con un profesional local antes de publicar. -->
+<Layout
+  title={`Política de privacidad - ${site.name}`}
+  description="Cómo se tratan los datos que envías en el formulario de presupuesto."
+>
+  <Header />
+  <main id="contenido" class="py-16 lg:py-24">
+    <Container class="max-w-3xl">
+      <h1 class="text-brand-navy mb-8 text-4xl font-extrabold tracking-normal">
+        Política de privacidad
+      </h1>
+      <div class="flex flex-col gap-6 leading-relaxed text-slate-700">
+        <section>
+          <h2 class="text-brand-navy mb-2 text-xl font-extrabold">Responsable</h2>
+          <p>
+            {site.name}. Contacto: {contact.email}.
+          </p>
+        </section>
+        <section>
+          <h2 class="text-brand-navy mb-2 text-xl font-extrabold">
+            Qué datos se recogen y para qué
+          </h2>
+          <p>
+            Nombre, teléfono, localidad y los detalles que escribas en el formulario de presupuesto.
+            Se usan únicamente para responder a tu solicitud.
+          </p>
+        </section>
+        <section>
+          <h2 class="text-brand-navy mb-2 text-xl font-extrabold">Cómo se envían</h2>
+          <p>
+            El formulario prepara un mensaje de WhatsApp que vos enviás y, además, manda una copia
+            por email a través del servicio Formspree. Su tratamiento posterior depende de las
+            condiciones de WhatsApp y de Formspree.
+          </p>
+        </section>
+        <section>
+          <h2 class="text-brand-navy mb-2 text-xl font-extrabold">Tus derechos</h2>
+          <p>
+            Según la Ley 18.331 de protección de datos personales, podés pedir acceso,
+            rectificación, actualización o supresión de tus datos escribiendo a {contact.email}. Si
+            creés que no se han respetado, podés reclamar ante la Unidad Reguladora y de Control de
+            Datos Personales (URCDP).
+          </p>
+        </section>
+      </div>
+    </Container>
+  </main>
+  <Footer />
+</Layout>

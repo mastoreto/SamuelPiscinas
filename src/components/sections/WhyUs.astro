@@ -1,0 +1,26 @@
+---
+import { pillars } from '../../data/home';
+import WaterProcess from '../cards/WaterProcess.astro';
+import PillarCard from '../cards/PillarCard.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+
+<section id="por-que-samuel" class="bg-white py-20 lg:py-26">
+  <Container>
+    <div class="mb-12 flex max-w-2xl flex-col gap-4 lg:mb-14">
+      <SectionHeading>Una piscina cuidada se disfruta mucho más.</SectionHeading>
+      <p class="text-lg leading-relaxed text-slate-600">
+        Nos ocupamos del agua y los equipos para que vos puedas disfrutarla con tranquilidad.
+      </p>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <PillarCard {...pillars.preventive} />
+      <PillarCard {...pillars.water} variant="featured">
+        <WaterProcess />
+      </PillarCard>
+      <PillarCard {...pillars.attention} />
+    </div>
+  </Container>
+</section>

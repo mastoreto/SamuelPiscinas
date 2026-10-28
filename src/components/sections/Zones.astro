@@ -1,0 +1,168 @@
+---
+import { zonasDepartments, zonasMap } from '../../data/zonas';
+import { contact } from '../../data/site';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+
+<section id="zonas" class="bg-brand-mist py-20 lg:py-26">
+  <Container>
+    <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+      <div class="flex flex-col gap-6">
+        <SectionHeading>¿Llegamos hasta tu casa?</SectionHeading>
+        <p class="text-lg leading-relaxed text-slate-600">
+          Trabajamos en Montevideo, Canelones y San José. Escribí tu dirección y te decimos al
+          instante si llegamos hasta ahí.
+        </p>
+
+        <form class="flex flex-col gap-3 sm:flex-row" data-zone-form data-whatsapp={contact.whatsappNumber}>
+          <label class="sr-only" for="zona-direccion">Tu dirección</label>
+          <input
+            id="zona-direccion"
+            type="text"
+            required
+            maxlength="150"
+            autocomplete="street-address"
+            placeholder="Calle, número y barrio o ciudad"
+            class="focus:border-brand-cyan focus:ring-brand-cyan text-brand-navy min-w-0 flex-1 rounded-full border-slate-300 px-5 py-3.5 placeholder:text-slate-500"
+          />
+          <button
+            type="submit"
+            class="bg-brand-deep hover:bg-brand-blue shadow-fluid rounded-full px-8 py-3.5 font-bold text-white transition-colors disabled:opacity-60"
+          >
+            Verificar
+          </button>
+        </form>
+
+        <div aria-live="polite" data-zone-result class="hidden rounded-2xl p-5 text-sm leading-relaxed">
+          <p class="text-base font-extrabold" data-zone-title></p>
+          <p class="mt-1" data-zone-text></p>
+          <a href="#contacto" class="mt-3 inline-block font-bold underline" data-zone-cta></a>
+        </div>
+        <p class="text-xs text-slate-500">
+          La búsqueda usa OpenStreetMap; el resultado es orientativo y lo confirmamos al presupuestar.
+        </p>
+      </div>
+
+      <svg
+        viewBox={`0 0 ${zonasMap.width} ${zonasMap.height}`}
+        role="img"
+        aria-label="Mapa de Montevideo, Canelones y San José"
+        class="mx-auto w-full max-w-xl"
+        data-zone-map
+      >
+        {zonasDepartments.map((d) => (
+          <g>
+            <path
+              d={d.path}
+              data-dept={d.id}
+              class="stroke-brand-deep fill-sky-100/60 transition-colors [stroke-linejoin:round] [stroke-width:2.5] data-[active]:fill-sky-300"
+            />
+            <text
+              x={d.label[0]}
+              y={d.label[1]}
+              text-anchor="middle"
+              class="fill-brand-navy pointer-events-none text-[22px] font-extrabold tracking-wide uppercase"
+            >
+              {d.name}
+            </text>
+          </g>
+        ))}
+        <g data-zone-pin style="display:none">
+          <circle r="16" class="fill-brand-cyan/30"></circle>
+          <circle r="7" class="fill-brand-deep stroke-white [stroke-width:3]"></circle>
+        </g>
+      </svg>
+    </div>
+  </Container>
+</section>
+
+<script>
+  import { zonasDepartments, zonasMap } from '../../data/zonas';
+
+  const form = document.querySelector<HTMLFormElement>('[data-zone-form]')!;
+  const input = form.querySelector('input')!;
+  const button = form.querySelector('button')!;
+  const result = document.querySelector<HTMLElement>('[data-zone-result]')!;
+  const [title, text] = ['[data-zone-title]', '[data-zone-text]'].map(
+    (s) => result.querySelector<HTMLElement>(s)!,
+  );
+  const cta = result.querySelector<HTMLAnchorElement>('[data-zone-cta]')!;
+  const pin = document.querySelector<SVGGElement>('[data-zone-pin]')!;
+  const paths = document.querySelectorAll<SVGPathElement>('[data-dept]');
+
+  // Ray casting sobre el contorno proyectado de cada departamento.
+  const inside = (x: number, y: number, ring: readonly (readonly number[])[]) => {
+    let c = false;
+    for (let i = 0, j = ring.length - 1; i < ring.length; j = i++) {
+      const [xi, yi] = ring[i];
+      const [xj, yj] = ring[j];
+      if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c;
+    }
+    return c;
+  };
+
+  const show = (kind: 'yes' | 'no' | 'warn', heading: string, body: string, cta_?: { href: string; label: string }) => {
+    result.className = `rounded-2xl p-5 text-sm leading-relaxed ${
+      { yes: 'bg-emerald-50 text-emerald-900', no: 'bg-amber-50 text-amber-900', warn: 'bg-slate-100 text-slate-800' }[kind]
+    }`;
+    title.textContent = heading;
+    text.textContent = body;
+    cta.hidden = !cta_;
+    if (cta_) {
+      cta.href = cta_.href;
+      cta.textContent = cta_.label;
+      cta.target = cta_.href.startsWith('#') ? '' : '_blank';
+    }
+  };
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const query = input.value.trim();
+    if (!query) return;
+    button.disabled = true;
+    button.textContent = 'Buscando…';
+    pin.style.display = "none";
+    paths.forEach((p) => p.removeAttribute('data-active'));
+    const wa = (msg: string) => `https://wa.me/${form.dataset.whatsapp}?text=${encodeURIComponent(msg)}`;
+    const ask = { href: wa(`Hola Samuel, mi dirección es ${query}. ¿Llegan hasta ahí?`), label: 'Consultar por WhatsApp →' };
+
+    try {
+      const url = new URL('https://nominatim.openstreetmap.org/search');
+      url.search = new URLSearchParams({
+        q: query, format: 'jsonv2', limit: '1', countrycodes: 'uy', 'accept-language': 'es',
+        // Sesgo hacia la zona de trabajo, sin excluir el resto del país.
+        viewbox: '-57.2,-33.8,-55.3,-34.95',
+      }).toString();
+      const res = await fetch(url, { signal: AbortSignal.timeout(8000) });
+      if (!res.ok) throw new Error(String(res.status));
+      const [hit] = (await res.json()) as { lat: string; lon: string; display_name: string }[];
+      if (!hit) {
+        show('warn', 'No encontramos esa dirección', 'Probá con calle, número y ciudad, o consultanos directamente.', ask);
+        return;
+      }
+
+      const { lon0, lat1, k, scale, pad } = zonasMap;
+      const x = (Number(hit.lon) - lon0) * k * scale + pad;
+      const y = (lat1 - Number(hit.lat)) * scale + pad;
+      const dept = zonasDepartments.find((d) => inside(x, y, d.ring));
+      const place = hit.display_name.split(', ').slice(0, 3).join(', ');
+
+      if (dept) {
+        pin.setAttribute('transform', `translate(${x} ${y})`);
+        pin.style.display = "";
+        document.querySelector(`[data-dept="${dept.id}"]`)?.setAttribute('data-active', '');
+        show('yes', `Sí, llegamos a ${dept.name}`, `Ubicamos tu dirección en ${place}.`, { href: '#contacto', label: 'Pedir presupuesto →' });
+        const localidad = document.querySelector<HTMLInputElement>('#localidad');
+        if (localidad && !localidad.value) localidad.value = dept.name;
+      } else {
+        show('no', 'Por ahora esa zona queda fuera', `Ubicamos tu dirección en ${place}. Trabajamos en Montevideo, Canelones y San José; escribinos igual y vemos si podemos llegar.`, ask);
+      }
+    } catch {
+      show('warn', 'No pudimos hacer la búsqueda ahora', 'Consultanos directamente y te respondemos.', ask);
+    } finally {
+      button.disabled = false;
+      button.textContent = 'Verificar';
+    }
+  });
+</script>

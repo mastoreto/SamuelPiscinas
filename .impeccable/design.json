@@ -1,0 +1,331 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-10-13T21:12:26.280641+00:00",
+  "title": "Design System: Samuel Piscinas",
+  "extensions": {
+    "colorMeta": {
+      "navy": {
+        "role": "primary",
+        "displayName": "Azul Marino Profundo",
+        "canonical": "#0b2347",
+        "tonalRamp": [
+          "#000f31",
+          "#152d52",
+          "#334d75",
+          "#54709a",
+          "#7794c0",
+          "#9bb9e7",
+          "#c1d9fe",
+          "#ebf2fe"
+        ]
+      },
+      "deep": {
+        "role": "primary",
+        "displayName": "Azul Piscina Hondo",
+        "canonical": "#0f3870",
+        "tonalRamp": [
+          "#000e35",
+          "#012b62",
+          "#244c86",
+          "#456fac",
+          "#6894d3",
+          "#8cb9fb",
+          "#c1d9fc",
+          "#eaf3ff"
+        ]
+      },
+      "blue": {
+        "role": "primary",
+        "displayName": "Azul Corporativo",
+        "canonical": "#125494",
+        "tonalRamp": [
+          "#00112c",
+          "#002e5b",
+          "#084e8d",
+          "#3371b3",
+          "#5796db",
+          "#82bcfe",
+          "#bddbfd",
+          "#e9f3ff"
+        ]
+      },
+      "cyan": {
+        "role": "secondary",
+        "displayName": "Cian Agua",
+        "canonical": "#0ea5e9",
+        "tonalRamp": [
+          "#001423",
+          "#02324a",
+          "#065378",
+          "#0d77a9",
+          "#219ddb",
+          "#5fc3fd",
+          "#b0dffd",
+          "#e5f4ff"
+        ]
+      },
+      "light-cyan": {
+        "role": "secondary",
+        "displayName": "Cian Claro",
+        "canonical": "#38bdf8",
+        "tonalRamp": [
+          "#001421",
+          "#023247",
+          "#055473",
+          "#0c78a3",
+          "#219ed3",
+          "#53c5fb",
+          "#ade0fc",
+          "#e4f5ff"
+        ]
+      },
+      "sky": {
+        "role": "neutral",
+        "displayName": "Cielo Pálido",
+        "canonical": "#e0f2fe",
+        "tonalRamp": [
+          "#06131b",
+          "#223039",
+          "#404f59",
+          "#61717c",
+          "#8495a0",
+          "#a9bac6",
+          "#c9dae6",
+          "#e5f4ff"
+        ]
+      },
+      "link": {
+        "role": "secondary",
+        "displayName": "Cian Texto",
+        "canonical": "#0369a1",
+        "tonalRamp": [
+          "#001326",
+          "#00314f",
+          "#00527f",
+          "#1b75ae",
+          "#479ad5",
+          "#6ec0fd",
+          "#b5ddfd",
+          "#e6f4ff"
+        ]
+      },
+      "mist": {
+        "role": "neutral",
+        "displayName": "Bruma",
+        "canonical": "#f5fafe",
+        "tonalRamp": [
+          "#0f1215",
+          "#2b2e31",
+          "#4a4e51",
+          "#6b6f73",
+          "#8e9396",
+          "#b3b8bc",
+          "#d3d8dc",
+          "#eef2f6"
+        ]
+      },
+      "ink": {
+        "role": "neutral",
+        "displayName": "Tinta",
+        "canonical": "#1e293b",
+        "tonalRamp": [
+          "#081122",
+          "#232e40",
+          "#414e62",
+          "#626f85",
+          "#8593a9",
+          "#aab8d0",
+          "#cad8f0",
+          "#ebf2ff"
+        ]
+      },
+      "slate-text": {
+        "role": "neutral",
+        "displayName": "Pizarra",
+        "canonical": "#475569",
+        "tonalRamp": [
+          "#071222",
+          "#222e41",
+          "#404e62",
+          "#617085",
+          "#8493aa",
+          "#a9b9d0",
+          "#c8d9f1",
+          "#eaf3ff"
+        ]
+      },
+      "whatsapp": {
+        "role": "tertiary",
+        "displayName": "Verde WhatsApp",
+        "canonical": "#047857",
+        "tonalRamp": [
+          "#00170d",
+          "#003826",
+          "#005c41",
+          "#1a8260",
+          "#48a783",
+          "#70cda7",
+          "#91eec7",
+          "#ceffe9"
+        ]
+      }
+    },
+    "typographyMeta": {
+      "display": {
+        "displayName": "Display",
+        "purpose": "Titular del hero."
+      },
+      "headline": {
+        "displayName": "Headline",
+        "purpose": "Títulos de sección."
+      },
+      "title": {
+        "displayName": "Title",
+        "purpose": "Títulos de tarjeta."
+      },
+      "body": {
+        "displayName": "Body",
+        "purpose": "Párrafos."
+      },
+      "label": {
+        "displayName": "Label",
+        "purpose": "Botones, etiquetas y chips."
+      }
+    },
+    "shadows": [
+      {
+        "name": "soft",
+        "value": "0 30px 60px -30px rgb(11 35 71 / 0.55)",
+        "purpose": "Fotos grandes y tarjeta navy."
+      },
+      {
+        "name": "fluid",
+        "value": "0 20px 40px -15px rgb(15 56 112 / 0.45)",
+        "purpose": "Botón principal."
+      },
+      {
+        "name": "float",
+        "value": "0 25px 50px -12px rgb(14 116 144 / 0.3)",
+        "purpose": "Tarjeta de informe sobre la foto del hero."
+      }
+    ],
+    "motion": [
+      {
+        "name": "transition-colors",
+        "value": "color 150ms cubic-bezier(0.4, 0, 0.2, 1)",
+        "purpose": "Hover de botones y enlaces."
+      }
+    ],
+    "breakpoints": [
+      {
+        "name": "sm",
+        "value": "640px"
+      },
+      {
+        "name": "md",
+        "value": "768px"
+      },
+      {
+        "name": "lg",
+        "value": "1024px"
+      },
+      {
+        "name": "xl",
+        "value": "1280px"
+      }
+    ]
+  },
+  "components": [
+    {
+      "name": "Botón principal",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "Acción dominante: pedir presupuesto.",
+      "html": "<a class=\"ds-btn-primary\" href=\"#\">Pedir presupuesto</a>",
+      "css": ".ds-btn-primary{display:inline-flex;font-family:'Plus Jakarta Sans Variable','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;background:#0f3870;color:#fff;font-weight:700;font-size:16px;padding:16px 28px;border-radius:9999px;box-shadow:0 20px 40px -15px rgb(15 56 112/.45);text-decoration:none;transition:background .2s}.ds-btn-primary:hover{background:#125494}.ds-btn-primary:focus-visible{outline:2px solid #0ea5e9;outline-offset:3px}.ds-btn-primary:active{transform:translateY(1px)}"
+    },
+    {
+      "name": "Botón WhatsApp",
+      "kind": "button",
+      "refersTo": "button-whatsapp",
+      "description": "Contacto directo por WhatsApp.",
+      "html": "<a class=\"ds-btn-wa\" href=\"#\">WhatsApp</a>",
+      "css": ".ds-btn-wa{display:inline-flex;font-family:'Plus Jakarta Sans Variable','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;background:#047857;color:#fff;font-weight:700;font-size:14px;padding:14px 24px;border-radius:9999px;text-decoration:none;transition:background .2s}.ds-btn-wa:hover{background:#065f46}.ds-btn-wa:focus-visible{outline:2px solid #0ea5e9;outline-offset:3px}"
+    },
+    {
+      "name": "Campo de formulario",
+      "kind": "input",
+      "refersTo": "input-field",
+      "description": "Entrada de texto con foco cian.",
+      "html": "<input class=\"ds-input\" placeholder=\"Tu nombre\" />",
+      "css": ".ds-input{font-family:'Plus Jakarta Sans Variable','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;width:260px;border:1px solid #cbd5e1;border-radius:1rem;padding:14px 16px;font-size:15px;color:#0b2347}.ds-input::placeholder{color:#64748b}.ds-input:focus{outline:none;border-color:#0ea5e9;box-shadow:0 0 0 2px #0ea5e9}"
+    },
+    {
+      "name": "Tarjeta de servicio",
+      "kind": "card",
+      "refersTo": "card-service",
+      "description": "Servicio con precio orientativo.",
+      "html": "<article class=\"ds-card\"><h3>Agua verde en 48 h</h3><p>Tratamiento de choque, filtrado y aspirado.</p></article>",
+      "css": ".ds-card{font-family:'Plus Jakarta Sans Variable','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;width:260px;background:#fff;border:1px solid #e0f2fe;border-radius:1.75rem;padding:28px;box-shadow:0 1px 2px rgb(0 0 0/.05)}.ds-card h3{margin:0 0 8px;color:#0b2347;font-size:18px;font-weight:800}.ds-card p{margin:0;color:#475569;font-size:15px;line-height:1.6}"
+    },
+    {
+      "name": "Tarjeta destacada",
+      "kind": "card",
+      "refersTo": "card-featured",
+      "description": "Foco oscuro de sección.",
+      "html": "<article class=\"ds-feat\"><h3>Agua bien equilibrada</h3><p>Mido y ajusto en cada visita.</p></article>",
+      "css": ".ds-feat{font-family:'Plus Jakarta Sans Variable','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;width:260px;background:#0b2347;color:#fff;border-radius:2rem;padding:32px;box-shadow:0 30px 60px -30px rgb(11 35 71/.55)}.ds-feat h3{margin:0 0 8px;font-size:20px;font-weight:800}.ds-feat p{margin:0;color:#cbd5e1;line-height:1.6}"
+    },
+    {
+      "name": "Enlace de navegación",
+      "kind": "nav",
+      "refersTo": "",
+      "description": "Enlace del header.",
+      "html": "<a class=\"ds-nav\" href=\"#\">Servicios</a>",
+      "css": ".ds-nav{font-family:'Plus Jakarta Sans Variable','Plus Jakarta Sans',ui-sans-serif,system-ui,sans-serif;font-size:14px;font-weight:600;color:#475569;text-decoration:none;transition:color .2s}.ds-nav:hover{color:#0f3870}.ds-nav:focus-visible{outline:2px solid #0ea5e9;outline-offset:3px}"
+    }
+  ],
+  "narrative": {
+    "northStar": "El vecino de confianza",
+    "overview": "La web habla como una persona, no como una empresa: Samuel conoce tu piscina y contesta él. Formas blandas y generosas sobre azul profundo y cian luminoso.",
+    "keyCharacteristics": [
+      "Paleta navy y cian, fija",
+      "Una sola familia tipográfica, Plus Jakarta Sans",
+      "Esquinas muy redondeadas y sombras suaves",
+      "Una tarjeta oscura por sección como punto focal",
+      "Contacto siempre a un gesto"
+    ],
+    "rules": [
+      {
+        "name": "The Brand Lock Rule",
+        "body": "La paleta navy y cian no se sustituye ni se extiende con colores nuevos.",
+        "section": "colors"
+      },
+      {
+        "name": "The Readable Cyan Rule",
+        "body": "El texto de acento sobre blanco usa #0369a1.",
+        "section": "colors"
+      },
+      {
+        "name": "The Weight Contrast Rule",
+        "body": "El peso 800 se reserva para titulares y datos clave.",
+        "section": "typography"
+      },
+      {
+        "name": "The Soft Blue Rule",
+        "body": "Las sombras llevan desplazamiento y desenfoque, teñidas de azul.",
+        "section": "elevation"
+      }
+    ],
+    "dos": [
+      "Do mantener navy (#0b2347) y cian (#0ea5e9) como identidad.",
+      "Do usar esquinas de 1rem a 2,5rem y botones en píldora.",
+      "Do poner fotos reales de Samuel y sus piscinas."
+    ],
+    "donts": [
+      "Don't cambiar la paleta navy y cian.",
+      "Don't usar fotos de stock evidentes.",
+      "Don't mostrar valoraciones, cifras u opiniones que no sean reales."
+    ]
+  }
+}

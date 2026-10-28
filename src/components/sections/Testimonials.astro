@@ -1,0 +1,33 @@
+---
+import { googleRating, testimonials } from '../../data/home';
+import TestimonialCard from '../cards/TestimonialCard.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+
+<section id="opiniones" class="bg-slate-50 py-20 lg:py-26">
+  <Container>
+    <div class="mx-auto mb-12 flex max-w-2xl flex-col gap-3 text-center">
+      <SectionHeading>Lo que dicen quienes me confían su piscina</SectionHeading>
+      {googleRating.url !== '#' && (
+        <p class="text-lg text-slate-600">
+          {googleRating.score} de 5 en Google, con {googleRating.count} reseñas ·{' '}
+          <a
+            href={googleRating.url}
+            class="text-brand-link font-bold hover:underline"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            Ver en Google
+          </a>
+        </p>
+      )}
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      {testimonials.map((testimonial) => (
+        <TestimonialCard {...testimonial} />
+      ))}
+    </div>
+  </Container>
+</section>

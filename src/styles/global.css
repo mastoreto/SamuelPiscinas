@@ -1,0 +1,113 @@
+@import '@fontsource/barlow/400.css';
+@import '@fontsource/barlow/500.css';
+@import '@fontsource/barlow/600.css';
+@import '@fontsource/barlow/700.css';
+@import '@fontsource/barlow/800.css';
+@import '@fontsource/barlow-condensed/700.css';
+@import '@fontsource/barlow-condensed/800.css';
+@import 'tailwindcss';
+@plugin '@tailwindcss/forms';
+
+@theme {
+  /* Tokens del sistema de diseño "Samuel Piscinas" (claude.ai) */
+  --font-sans: Barlow, system-ui, sans-serif;
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+
+  --color-brand-navy: #071a2e;
+  --color-brand-deep: #082f57;
+  --color-brand-blue: #0c447d;
+  --color-brand-cyan: #20a9e0;
+  --color-brand-light-cyan: #4cbbe8;
+  --color-brand-sky: #bfe6f6;
+  /* El celeste de marca no llega a 4.5:1 sobre blanco: texto y enlaces usan este */
+  --color-brand-link: #0b6f99;
+  --color-brand-mist: #eef6fb;
+
+  /* Radios: sm inputs, md botones, lg tarjetas e imágenes */
+  --radius-md: 6px;
+  --radius-xl: 10px;
+  --radius-2xl: 16px;
+  --radius-3xl: 16px;
+  --radius-4xl: 16px;
+  --radius-5xl: 16px;
+
+  /* Sombras suaves teñidas de navy: card y float */
+  --shadow-card: 0 2px 8px rgb(12 68 125 / 0.1);
+  --shadow-float: 0 8px 24px rgb(12 68 125 / 0.18);
+  --shadow-soft: var(--shadow-card);
+  --shadow-fluid: var(--shadow-card);
+  --shadow-lg: var(--shadow-card);
+  --shadow-xl: var(--shadow-float);
+  --shadow-2xl: var(--shadow-float);
+}
+
+@layer base {
+  /* Tailwind v4 deja los botones con cursor por defecto */
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  /* Que el header sticky no tape el título al saltar a un ancla */
+  [id] {
+    scroll-margin-top: 6rem;
+  }
+
+  /* Superficies del navegador teñidas con la paleta */
+  ::selection {
+    background: var(--color-brand-sky);
+    color: var(--color-brand-navy);
+  }
+
+  :focus-visible {
+    outline-color: var(--color-brand-link);
+  }
+
+  html {
+    accent-color: var(--color-brand-blue);
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  h1,
+  h2 {
+    font-family: var(--font-display);
+  }
+}
+
+@utility hero-bg {
+  background:
+    radial-gradient(900px 480px at 88% 0%, var(--color-brand-sky) 0%, transparent 70%),
+    linear-gradient(180deg, var(--color-brand-mist) 0%, #ffffff 100%);
+}
+
+@keyframes seal-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.hero-seal {
+  animation: seal-spin 28s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-seal {
+    animation: none;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
