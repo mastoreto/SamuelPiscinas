@@ -2,13 +2,13 @@
 // Pantalla de carga de la primera visita: el agua turbia se limpia (cloro + aspiradora manual) mientras
 // el porcentaje sube de 0 a 100. El contenido del sitio sigue en el HTML detrás, así que los buscadores lo leen igual.
 // Se muestra sólo una vez por navegador (localStorage), nunca a rastreadores; con "reducir movimiento" se ve estática,
-// y un seguro la cierra a los 10 s pase lo que pase. Para verla de nuevo: añadir ?loader a la URL.
+// y un seguro la cierra a los 10 s pase lo que pase. Para verla de nuevo: añadir ?loader a la URL (en desarrollo aparece siempre; ?noloader la salta).
 import { Image } from 'astro:assets';
 import { images, site } from '../../data/site';
 ---
 
 <!-- Decide antes del primer pintado: sin esto, quien ya la vio parpadearía con la pantalla de carga -->
-<script is:inline>
+<script is:inline define:vars={{ dev: import.meta.env.DEV }}>
   (function () {
     var force = /[?&]loader\b/.test(location.search);
     var bot = /bot|crawl|spider|lighthouse|pagespeed|gtmetrix/i.test(navigator.userAgent);
@@ -18,7 +18,9 @@ import { images, site } from '../../data/site';
     } catch (e) {
       /* sin almacenamiento (modo privado estricto): se muestra, no hay dónde recordarlo */
     }
-    if (!bot && (force || !seen)) document.documentElement.setAttribute('data-loading', '');
+    // En desarrollo se ve en cada carga (para poder ajustarla); ?noloader la salta.
+    var skip = /[?&]noloader\b/.test(location.search);
+    if (!bot && !skip && (force || dev || !seen)) document.documentElement.setAttribute('data-loading', '');
   })();
 </script>
 
