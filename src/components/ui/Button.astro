@@ -1,7 +1,7 @@
 ---
 import type { HTMLAttributes } from 'astro/types';
 
-type Variant = 'primary' | 'deep' | 'outline' | 'light' | 'ghost' | 'whatsapp';
+type Variant = 'primary' | 'light' | 'whatsapp';
 type Size = 'md' | 'lg';
 
 type Props = HTMLAttributes<'a'> & {
@@ -14,10 +14,7 @@ const { href, variant = 'primary', size = 'md', class: className, ...rest } = As
 
 const variants: Record<Variant, string> = {
   primary: 'bg-brand-navy hover:bg-brand-blue text-white shadow-lg',
-  deep: 'bg-brand-deep hover:bg-brand-blue shadow-fluid text-white',
-  outline: 'text-brand-deep border border-slate-200 bg-white hover:border-brand-light-cyan',
   light: 'bg-brand-light-cyan text-brand-navy hover:bg-white',
-  ghost: 'border border-white/55 text-white hover:border-white hover:bg-white/10',
   whatsapp: 'bg-emerald-700 text-white hover:bg-emerald-800',
 };
 

@@ -5,12 +5,12 @@ import Container from '../ui/Container.astro';
 import SectionHeading from '../ui/SectionHeading.astro';
 ---
 
-<section id="opiniones" class="bg-slate-50 py-20 lg:py-26">
+<section id="opiniones" class="bg-brand-mist py-20 lg:py-26">
   <Container>
     <div class="mx-auto mb-12 flex max-w-2xl flex-col gap-3 text-center">
       <SectionHeading>Lo que dicen quienes me confían su piscina</SectionHeading>
       {googleRating.url !== '#' && (
-        <p class="text-lg text-slate-600">
+        <p class="text-lg text-ink-600">
           {googleRating.score} de 5 en Google, con {googleRating.count} reseñas ·{' '}
           <a
             href={googleRating.url}
