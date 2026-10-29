@@ -1,0 +1,73 @@
+---
+import { contact, whatsappHref } from '../../data/site';
+import LeadForm from '../forms/LeadForm.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+const channels = [
+  { label: 'WhatsApp', value: contact.whatsappDisplay, href: whatsappHref(), external: true },
+  { label: 'Correo', value: contact.email, href: `mailto:${contact.email}`, external: false },
+  { label: 'Instagram', value: `@${contact.instagramHandle}`, href: `https://instagram.com/${contact.instagramHandle}`, external: true },
+] as const;
+---
+
+<section id="contacto" class="mx-3 rounded-[2rem] sm:mx-5 lg:rounded-[2.5rem] bg-brand-mist py-20 lg:py-26">
+  <Container>
+    <!-- Un bloque dividido en dos: a la izquierda la charla, a la derecha lo que hay que completar -->
+    <div class="grid overflow-hidden rounded-[2rem_2rem_2rem_0.5rem] bg-white shadow-[0_24px_60px_-34px_rgb(7_26_46/0.5)] lg:grid-cols-[5fr_7fr]">
+      <div class="panel-dark hidden lg:col-start-1 lg:row-start-1 lg:block"></div>
+
+      <!-- El contenido de la izquierda acompaña el scroll mientras se completa el formulario -->
+      <div class="max-lg:panel-dark relative flex flex-col gap-6 p-7 text-white lg:sticky lg:top-24 lg:col-start-1 lg:row-start-1 lg:self-start lg:p-11">
+        <div class="flex flex-col gap-4">
+          <SectionHeading class="text-white!">Contame de tu piscina</SectionHeading>
+          <p class="text-lg leading-relaxed text-white/80">
+            Te respondo yo, con una propuesta y un precio cerrado antes de empezar.
+          </p>
+        </div>
+
+        <!-- Canales directos: líneas sobrias, con la línea ondulada del hero al pasar el mouse -->
+        <ul class="border-t border-white/20">
+          {channels.map((c) => (
+            <li class="border-b border-white/20">
+              <a
+                href={c.href}
+                target={c.external ? '_blank' : undefined}
+                rel={c.external ? 'noopener noreferrer' : undefined}
+                class="group flex flex-col gap-0.5 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
+              >
+                <small class="text-sm tracking-wide text-white/65">{c.label}</small>
+                <span class="text-lg font-bold break-words decoration-[#7cd0f2] decoration-[1.5px] underline-offset-[5px] group-hover:underline group-hover:[text-decoration-style:wavy] sm:text-right">{c.value}</span>
+              </a>
+            </li>
+          ))}
+        </ul>
+
+        <!-- Horario: dice si Samuel está atendiendo ahora (hora de Uruguay) -->
+        <p class="flex items-start gap-3 text-white/85" data-hours>
+          <span data-dot class="mt-2 size-2.5 shrink-0 rounded-full bg-slate-400"></span>
+          <span>
+            <span data-hours-text class="font-semibold">Atiendo de {contact.hours}.</span>
+            <span class="block text-sm text-white/60">{contact.hours}</span>
+          </span>
+        </p>
+      </div>
+
+      <LeadForm />
+    </div>
+  </Container>
+</section>
+
+<script>
+  const box = document.querySelector<HTMLElement>('[data-hours]');
+  if (box) {
+    // Lunes a viernes, de 8 a 18 h, en hora de Montevideo.
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: 'America/Montevideo', weekday: 'short', hour: 'numeric', hour12: false }).formatToParts(new Date());
+    const get = (t: string) => parts.find((p) => p.type === t)?.value ?? '';
+    const open = !['Sat', 'Sun'].includes(get('weekday')) && +get('hour') % 24 >= 8 && +get('hour') % 24 < 18;
+    box.querySelector('[data-hours-text]')!.textContent = open
+      ? 'Estoy atendiendo ahora: te respondo enseguida.'
+      : 'Ahora estoy fuera de horario: te respondo apenas arranque.';
+    box.querySelector('[data-dot]')!.classList.replace('bg-slate-400', open ? 'bg-emerald-500' : 'bg-sun');
+  }
+</script>

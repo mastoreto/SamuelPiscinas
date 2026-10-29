@@ -1,0 +1,42 @@
+---
+// Paso a paso como secuencia: una foto grande con barras de progreso arriba (como las historias).
+// El marcado muestra el primer paso; el script de Portfolio avanza solo y permite saltar de paso.
+import { Image } from 'astro:assets';
+
+type Props = { steps: { title: string; text: string; src: ImageMetadata }[] };
+const { steps } = Astro.props;
+---
+
+<div data-steps class="relative aspect-[16/11] overflow-hidden rounded-[1.75rem_1.75rem_1.75rem_0.5rem] bg-sky-100 select-none">
+  {steps.map((step, i) => (
+    <Image
+      src={step.src}
+      alt={step.title}
+      widths={[640, 960, 1280]}
+      sizes="(min-width: 1024px) 55vw, 100vw"
+      data-step-img
+      class:list={['absolute inset-0 size-full object-cover transition-opacity duration-500 ease-out', i > 0 && 'opacity-0']}
+    />
+  ))}
+  <div class="from-brand-navy/85 via-brand-navy/15 absolute inset-0 bg-linear-to-t to-transparent"></div>
+
+  <div class="absolute inset-x-3.5 top-3.5 z-10 flex gap-1.5">
+    {steps.map((step, i) => (
+      <button type="button" data-seg aria-label={`Paso ${i + 1}: ${step.title}`} class="flex h-6 flex-1 items-center rounded-md focus-visible:outline-2 focus-visible:outline-white">
+        <span class="block h-1 w-full overflow-hidden rounded-full bg-white/35">
+          <span data-fill class="block h-full w-full origin-left bg-white" style={`transform:scaleX(${i === 0 ? 1 : 0})`}></span>
+        </span>
+      </button>
+    ))}
+  </div>
+
+  <div class="absolute inset-x-5 bottom-5 z-10 text-white sm:inset-x-7 sm:bottom-7">
+    {steps.map((step, i) => (
+      <div data-cap hidden={i > 0} class="flex flex-col gap-1">
+        <small class="text-sm font-semibold text-white/85">Paso {i + 1} de {steps.length}</small>
+        <strong class="font-display text-2xl leading-tight font-bold sm:text-3xl">{step.title}</strong>
+        <p class="max-w-[44ch] text-white/95 max-sm:hidden">{step.text}</p>
+      </div>
+    ))}
+  </div>
+</div>

@@ -1,0 +1,37 @@
+---
+import { faqs } from '../../data/home';
+import { whatsappHref } from '../../data/site';
+import Button from '../ui/Button.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+
+<section id="preguntas" class="bg-white py-20 lg:py-26">
+  <Container>
+    <SectionHeading class="mb-10 text-center lg:mb-14">Preguntas frecuentes</SectionHeading>
+
+    <div class="grid items-start gap-6 lg:grid-cols-[1fr_1.6fr] lg:gap-8">
+      <div class="panel-dark shadow-soft flex flex-col items-start gap-4 rounded-[2rem] p-8 text-white lg:sticky lg:top-28 lg:p-10">
+        <h3 class="text-3xl leading-tight font-extrabold">¿Tenés más preguntas?</h3>
+        <p class="leading-relaxed text-white/80">
+          Escribile directo a Samuel: te responde él mismo.
+        </p>
+        <Button href={whatsappHref()} variant="light" size="lg" target="_blank" rel="noopener noreferrer" class="mt-2">
+          Escribir por WhatsApp
+        </Button>
+      </div>
+
+      <div class="divide-y divide-line border-y border-line">
+        {faqs.map((item, i) => (
+          <details name="faq" open={i === 0} class="group">
+            <summary class="text-brand-navy group-open:text-brand-link flex cursor-pointer list-none items-center justify-between gap-4 py-5 text-lg font-bold transition-colors [&::-webkit-details-marker]:hidden">
+              {item.q}
+              <span class="text-brand-link flex size-7 shrink-0 items-center justify-center rounded-full border border-current text-lg leading-none transition-transform group-open:rotate-45" aria-hidden="true">+</span>
+            </summary>
+            <p class="max-w-[60ch] pb-6 leading-relaxed text-ink-600">{item.a}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </Container>
+</section>

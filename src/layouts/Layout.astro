@@ -1,23 +1,68 @@
-<!doctype html>
-<html lang="en">
-	<head>
-		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<link rel="icon" href="/favicon.ico" />
-		<meta name="generator" content={Astro.generator} />
-		<title>Astro Basics</title>
-	</head>
-	<body>
-		<slot />
-	</body>
-</html>
+---
+import '../styles/global.css';
+import { site } from '../data/site';
 
-<style>
-	html,
-	body {
-		margin: 0;
-		width: 100%;
-		height: 100%;
-	}
-</style>
+type Props = {
+  title?: string;
+  description?: string;
+  jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+};
+
+const { title = site.title, description = site.description, jsonLd, noindex = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+// La imagen para compartir es un archivo propio (1200×630) con marca y mensaje, en /public.
+const ogImage = new URL(site.ogImage, Astro.site);
+---
+
+<!doctype html>
+<html lang="es-UY" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+    <meta name="author" content={site.name} />
+    <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es-UY" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#071a2e" />
+
+    <!-- Open Graph: WhatsApp, Facebook, LinkedIn, Telegram y la mayoría de los chats -->
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content={site.locale} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.ogImageAlt} />
+
+    <!-- Tarjeta de X (Twitter) -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={site.ogImageAlt} />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>}
+  </head>
+  <body class="selection:bg-brand-light-cyan bg-white font-sans text-ink-700 antialiased selection:text-white">
+    <a
+      href="#contenido"
+      class="bg-brand-navy focus:ring-brand-cyan sr-only rounded-full px-5 py-3 text-sm font-bold text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-60 focus:ring-2"
+    >
+      Saltar al contenido
+    </a>
+    <slot />
+  </body>
+</html>

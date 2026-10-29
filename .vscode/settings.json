@@ -1,0 +1,6 @@
+{
+  "files.associations": { "*.css": "tailwindcss" },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "[astro]": { "editor.defaultFormatter": "astro-build.astro-vscode" },
+  "tailwindCSS.experimental.configFile": "src/styles/global.css"
+}

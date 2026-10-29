@@ -1,0 +1,55 @@
+---
+import { Image } from 'astro:assets';
+import { services } from '../../data/home';
+import { images } from '../../data/site';
+import ServiceCard from '../cards/ServiceCard.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+// El mantenimiento es el servicio principal; el resto van en la cuadrícula.
+const [main, ...others] = services;
+---
+
+<section id="servicios" class="mx-3 rounded-[2rem] sm:mx-5 lg:rounded-[2.5rem] bg-brand-mist py-20 lg:py-26">
+  <Container>
+    <div class="mb-12 grid items-end gap-6 lg:mb-14 lg:grid-cols-2 lg:gap-16">
+      <SectionHeading>Todo lo que necesita tu piscina, durante todo el año</SectionHeading>
+      <p class="max-w-xl text-lg text-ink-600">
+        Mantenimiento de piscinas, tratamiento del agua, filtros, cloradores y bombas de calor en Montevideo,
+        Canelones y San José. Cada trabajo se presupuesta sin cargo, según tu piscina.
+      </p>
+    </div>
+
+    <div class="grid gap-5 lg:grid-cols-[1fr_2fr]">
+      <!-- Servicio principal -->
+      <article class="shadow-soft relative flex min-h-96 flex-col justify-end overflow-hidden rounded-[2rem_2rem_2rem_0.5rem] p-8 text-white lg:min-h-0">
+        <Image
+          src={images.pool}
+          alt=""
+          widths={[480, 800, 1200]}
+          sizes="(min-width: 1024px) 33vw, 100vw"
+          class="absolute inset-0 size-full object-cover"
+        />
+        <div class="from-brand-navy/90 via-brand-navy/45 absolute inset-0 bg-linear-to-t to-transparent"></div>
+        <div class="relative flex flex-col items-start gap-3">
+          <h3 class="text-4xl leading-tight font-bold">{main.title}</h3>
+          <p class="leading-relaxed text-white/85">{main.description}</p>
+        </div>
+      </article>
+
+      <div class="grid gap-5 sm:grid-cols-2">
+        {others.map((service, i) => (
+          <ServiceCard {...service} pattern={(['ripples', 'grid', 'hatch'] as const)[i]} />
+        ))}
+
+        <!-- Clubes y piscinas colectivas -->
+        <div class="panel-dark shadow-soft flex flex-col gap-3 rounded-[1.75rem_1.75rem_1.75rem_0.5rem] p-7 text-white">
+          <h3 class="text-2xl leading-tight font-bold">Planes para clubes y piscinas colectivas</h3>
+          <p class="text-[0.9375rem] leading-relaxed text-slate-300">
+            Libro de registro al día, controles del agua y analíticas de laboratorio.
+          </p>
+        </div>
+      </div>
+    </div>
+  </Container>
+</section>

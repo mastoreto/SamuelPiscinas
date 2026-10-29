@@ -1,0 +1,176 @@
+---
+import { contact, images } from '../../data/site';
+import BeforeAfter from '../cards/BeforeAfter.astro';
+import StepStage from '../cards/StepStage.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+
+// TODO(cliente): fotos y pasos de EJEMPLO; sustituir por trabajos reales de Samuel.
+const { greenBefore, greenAfter, pool, community } = images;
+const photos = [pool, community, greenBefore, greenAfter];
+const steps = (items: [string, string][], offset = 0) =>
+  items.map(([title, text], i) => ({ title, text, src: photos[(i + offset) % photos.length] }));
+
+const works = [
+  {
+    label: 'Mantenimientos',
+    tag: 'Antes y después',
+    text: 'Tratamiento de choque, filtrado y aspirado hasta dejar el agua cristalina.',
+    before: greenBefore,
+    after: greenAfter,
+    alt: 'Piscina tras el mantenimiento',
+    afterLabel: '48 h después',
+  },
+  {
+    label: 'Instalaciones',
+    tag: 'Paso a paso',
+    text: 'Así trabajamos cada instalación de equipos, del relevamiento a la puesta en marcha.',
+    steps: steps([
+      ['Relevamiento', 'Vemos la piscina y el cuarto de máquinas, y pasamos un presupuesto cerrado.'],
+      ['Preparación', 'Cortamos el circuito y dejamos listo el lugar del equipo.'],
+      ['Instalación', 'Montamos y conectamos el equipo con sus válvulas y protecciones.'],
+      ['Puesta en marcha', 'Probamos, regulamos y te explicamos cómo usarlo.'],
+    ]),
+  },
+  {
+    label: 'Cambios de arena',
+    tag: 'Paso a paso',
+    text: 'Renovamos la arena del filtro para recuperar un buen filtrado del agua.',
+    note: 'Recomendamos la arena de cuarzo: mayor durabilidad y menos cambios a lo largo de los años.',
+    steps: steps(
+      [
+        ['Vaciado', 'Retiramos la arena vieja del filtro.'],
+        ['Revisión interna', 'Limpiamos el tanque y revisamos colector y difusores.'],
+        ['Carga de arena', 'Colocamos la arena nueva en la granulometría correcta.'],
+        ['Lavado y arranque', 'Hacemos el primer lavado y dejamos el filtro funcionando.'],
+      ],
+      1,
+    ),
+  },
+  {
+    label: 'Reparaciones',
+    tag: 'Antes y después',
+    text: 'Bombas con fugas o ruido, filtros, focos y cuadros: diagnosticamos y dejamos todo funcionando.',
+    before: greenBefore,
+    after: greenAfter,
+    alt: 'Piscina tras la reparación',
+  },
+];
+---
+
+<section id="trabajos" class="bg-white py-20 lg:py-26">
+  <Container>
+    <div class="mb-10 flex max-w-2xl flex-col gap-4 lg:mb-12">
+      <SectionHeading>Nuestros trabajos</SectionHeading>
+      <p class="text-lg text-ink-600">
+        Mantenimiento, agua verde y control del agua en {contact.zone}.
+      </p>
+    </div>
+
+    <div data-works class="grid items-center gap-8 lg:grid-cols-[1.5fr_1fr] lg:gap-12">
+      <!-- Un solo escenario para todos los trabajos -->
+      <div aria-live="polite">
+        {works.map((work, i) => (
+          <div data-stage hidden={i > 0}>
+            {work.steps ? (
+              <StepStage steps={work.steps} />
+            ) : (
+              <BeforeAfter before={work.before!} after={work.after!} alt={work.alt!} afterLabel={work.afterLabel} />
+            )}
+          </div>
+        ))}
+      </div>
+
+      <!-- Lista siempre a la vista: dice qué muestra cada trabajo -->
+      <ul class="border-t border-line">
+        {works.map((work, i) => (
+          <li class="border-b border-line">
+            <button type="button" data-work aria-current={i === 0 ? 'true' : 'false'} class="group focus-visible:outline-brand-link w-full rounded-lg py-4.5 text-left focus-visible:outline-2 focus-visible:-outline-offset-2">
+              <span class="flex items-baseline justify-between gap-3">
+                <span class="font-display group-aria-[current=true]:text-brand-navy hover:text-brand-navy text-[1.35rem] leading-tight font-bold text-ink-500 transition-colors">{work.label}</span>
+                <span class="text-sm font-semibold whitespace-nowrap text-ink-500">{work.tag}</span>
+              </span>
+              <span class="grid grid-rows-[0fr] transition-[grid-template-rows] duration-300 ease-out group-aria-[current=true]:grid-rows-[1fr]">
+                <span class="overflow-hidden">
+                  <span class="mt-2.5 block leading-relaxed text-ink-600">{work.text}</span>
+                  {work.note && (
+                    <span class="text-brand-navy mt-3 block rounded-[0.75rem_0.75rem_0.75rem_0.25rem] bg-wash px-3.5 py-2.5 text-sm font-semibold">{work.note}</span>
+                  )}
+                </span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  </Container>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-works]');
+
+  if (root) {
+    const items = [...root.querySelectorAll<HTMLElement>('[data-work]')];
+    const stages = [...root.querySelectorAll<HTMLElement>('[data-stage]')];
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let current = 0;
+    let step = 0;
+    let progress = 0;
+    let paused = false;
+    let visible = false;
+
+    const steps = () => stages[current].querySelector<HTMLElement>('[data-steps]');
+
+    // Pinta el paso actual: foto, texto y barras de progreso.
+    const paint = () => {
+      const el = steps();
+      if (!el) return;
+      el.querySelectorAll('[data-step-img]').forEach((img, k) => img.classList.toggle('opacity-0', k !== step));
+      el.querySelectorAll<HTMLElement>('[data-cap]').forEach((cap, k) => (cap.hidden = k !== step));
+      el.querySelectorAll<HTMLElement>('[data-fill]').forEach((fill, k) => {
+        fill.style.transform = `scaleX(${k < step ? 1 : k === step ? progress / 100 : 0})`;
+      });
+    };
+    const restart = () => {
+      step = 0;
+      progress = reduce ? 100 : 0;
+      paint();
+    };
+
+    const select = (i: number) => {
+      current = i;
+      items.forEach((b, k) => b.setAttribute('aria-current', String(k === i)));
+      stages.forEach((s, k) => (s.hidden = k !== i));
+      restart();
+    };
+    items.forEach((b, i) => b.addEventListener('click', () => select(i)));
+
+    stages.forEach((stage) => {
+      stage.addEventListener('click', (e) => {
+        const seg = (e.target as HTMLElement).closest<HTMLElement>('[data-seg]');
+        if (!seg) return;
+        step = [...stage.querySelectorAll('[data-seg]')].indexOf(seg);
+        progress = reduce ? 100 : 0;
+        paint();
+      });
+      ['mouseenter', 'focusin'].forEach((ev) => stage.addEventListener(ev, () => (paused = true)));
+      ['mouseleave', 'focusout'].forEach((ev) => stage.addEventListener(ev, () => (paused = false)));
+    });
+
+    // El paso a paso avanza solo, mientras la sección se ve y sin "reducir movimiento".
+    new IntersectionObserver(([e]) => (visible = e.isIntersecting)).observe(root);
+    if (!reduce) {
+      const DURATION = 4200;
+      setInterval(() => {
+        const el = steps();
+        if (!el || !visible || paused) return;
+        progress += (60 / DURATION) * 100;
+        if (progress >= 100) {
+          progress = 0;
+          step = (step + 1) % el.querySelectorAll('[data-seg]').length;
+        }
+        paint();
+      }, 60);
+    }
+  }
+</script>

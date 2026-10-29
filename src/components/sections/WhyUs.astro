@@ -1,0 +1,32 @@
+---
+import { pillars } from '../../data/home';
+import ChatPreview from '../cards/ChatPreview.astro';
+import PillarCard from '../cards/PillarCard.astro';
+import WaterProcess from '../cards/WaterProcess.astro';
+import Container from '../ui/Container.astro';
+import SectionHeading from '../ui/SectionHeading.astro';
+---
+
+<section id="como-trabajamos" class="bg-white py-14 lg:flex lg:min-h-[calc(100svh-5.3125rem)] lg:items-center lg:py-12">
+  <Container class="w-full">
+    <div class="grid items-start gap-10 lg:grid-cols-[1fr_2.3fr] lg:gap-12">
+      <div class="flex flex-col gap-4 lg:sticky lg:top-28">
+        <SectionHeading class="lg:text-4xl">Una piscina cuidada se disfruta mucho más.</SectionHeading>
+        <p class="text-lg leading-relaxed text-ink-600">
+          Nos ocupamos del agua y los equipos para que vos puedas disfrutarla con tranquilidad.
+        </p>
+      </div>
+
+      <!-- El tratamiento del agua, la tarjeta más grande, a la izquierda; las otras dos apiladas a la derecha -->
+      <div class="grid gap-5 md:grid-cols-[1.2fr_1fr]">
+        <PillarCard {...pillars.water} variant="featured" class="md:row-span-2">
+          <WaterProcess />
+        </PillarCard>
+        <PillarCard {...pillars.preventive} animatedBullets />
+        <PillarCard {...pillars.attention}>
+          <ChatPreview />
+        </PillarCard>
+      </div>
+    </div>
+  </Container>
+</section>

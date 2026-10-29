@@ -1,0 +1,72 @@
+---
+// Mini conversación de ejemplo: el cliente pregunta y Samuel responde. El marcado está en el
+// estado final (sin JS o con "reducir movimiento" se ve así); el script lo anima en bucle.
+---
+
+<div class="flex flex-col gap-2 text-sm" data-chat>
+  <p data-in class="text-brand-navy bg-brand-sky max-w-[88%] self-end rounded-2xl rounded-br-md px-3.5 py-2 font-medium">
+    ¿Cómo viene el agua esta semana?
+  </p>
+  <!-- Los puntos de "escribiendo" y la respuesta comparten celda: el alto no cambia al aparecer -->
+  <div class="flex items-end gap-2">
+    <span class="bg-brand-navy flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white" aria-hidden="true">S</span>
+    <div class="grid">
+    <p data-typing style="opacity:0" class="[grid-area:1/1] flex gap-1 self-start justify-self-start rounded-2xl rounded-bl-md border border-line bg-white px-3.5 py-3" aria-hidden="true">
+      <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </p>
+    <p data-out class="[grid-area:1/1] max-w-[88%] self-start justify-self-start rounded-2xl rounded-bl-md border border-line bg-white px-3.5 py-2 text-ink-600">
+      Todo bien, el agua está perfecta. Paso el jueves a la tarde.
+    </p>
+    </div>
+  </div>
+  <span class="text-xs text-ink-500">Ejemplo de consulta por WhatsApp</span>
+</div>
+
+<style>
+  .dot {
+    width: 0.4rem;
+    height: 0.4rem;
+    border-radius: 9999px;
+    background: #94a3b8;
+    animation: dot-bounce 1s ease-in-out infinite;
+  }
+  .dot:nth-child(2) { animation-delay: 0.15s; }
+  .dot:nth-child(3) { animation-delay: 0.3s; }
+  @keyframes dot-bounce {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-3px); opacity: 1; }
+  }
+</style>
+
+<script>
+  import { animate } from 'motion';
+
+  const chat = document.querySelector<HTMLElement>('[data-chat]');
+  const msgIn = chat?.querySelector<HTMLElement>('[data-in]');
+  const msgOut = chat?.querySelector<HTMLElement>('[data-out]');
+  const typing = chat?.querySelector<HTMLElement>('[data-typing]');
+
+  if (chat && msgIn && msgOut && typing && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    const wait = (s: number) => new Promise((r) => setTimeout(r, s * 1000));
+    const appear = (el: HTMLElement) => animate(el, { opacity: [0, 1], transform: ['translateY(8px)', 'translateY(0px)'] }, { duration: 0.45, ease: [0.23, 1, 0.32, 1] });
+
+    const loop = async () => {
+      for (;;) {
+        msgIn.style.opacity = msgOut.style.opacity = typing.style.opacity = '0';
+        await wait(0.4);
+        await appear(msgIn);
+        await wait(0.9);
+        await appear(typing);
+        await wait(1.3);
+        typing.style.opacity = '0';
+        await appear(msgOut);
+        await wait(4);
+        await animate([msgIn, msgOut], { opacity: 0 }, { duration: 0.5 });
+      }
+    };
+
+    new IntersectionObserver(([e], io) => {
+      if (e.isIntersecting) { io.disconnect(); loop(); }
+    }).observe(chat);
+  }
+</script>

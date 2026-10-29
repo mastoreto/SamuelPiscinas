@@ -1,0 +1,34 @@
+---
+import type { Testimonial } from '../../data/home';
+import Icon from '../ui/Icon.astro';
+
+type Props = Testimonial;
+const { quote, name, place, avatar } = Astro.props;
+
+const avatarColors: Record<Testimonial['avatar'], string> = {
+  deep: 'bg-brand-deep',
+  sky: 'bg-sky-600',
+  slate: 'bg-slate-800',
+};
+---
+
+<figure class="m-0 flex flex-col gap-6 rounded-[1.75rem] border border-line bg-white p-8">
+  <blockquote class="leading-relaxed text-ink-700">
+    <p>«{quote}»</p>
+  </blockquote>
+  <figcaption class="mt-auto flex items-center gap-3 border-t border-slate-100 pt-5">
+    <span
+      class:list={[
+        'flex size-10.5 items-center justify-center rounded-full text-white',
+        avatarColors[avatar],
+      ]}
+      aria-hidden="true"
+    >
+      <Icon name="user" class="size-5" />
+    </span>
+    <span>
+      <b class="text-brand-navy block text-sm">{name}</b>
+      <span class="text-sm text-ink-500">{place}</span>
+    </span>
+  </figcaption>
+</figure>

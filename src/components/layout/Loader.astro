@@ -1,0 +1,277 @@
+---
+// Pantalla de carga que se muestra en cada entrada al sitio: el agua turbia se limpia (cloro + aspiradora manual) mientras
+// el porcentaje sube de 0 a 100. El contenido del sitio sigue en el HTML detrás, así que los buscadores lo leen igual.
+// Se muestra en cada carga, salvo a rastreadores; con "reducir movimiento" se ve estática, y un seguro la cierra
+// a los 10 s pase lo que pase. Para saltarla: añadir ?noloader a la URL.
+import { Image } from 'astro:assets';
+import { images, site } from '../../data/site';
+---
+
+<!-- Se decide antes del primer pintado, para que el contenido no aparezca un instante antes de la pantalla -->
+<script is:inline>
+  (function () {
+    var bot = /bot|crawl|spider|lighthouse|pagespeed|gtmetrix/i.test(navigator.userAgent);
+    var skip = /[?&]noloader\b/.test(location.search);
+    if (!bot && !skip) document.documentElement.setAttribute('data-loading', '');
+  })();
+</script>
+
+<div id="loader" class="ld" role="status" aria-label={`Cargando ${site.name}`}>
+  <div class="ld-dirty"></div>
+  <div class="ld-clean"></div>
+  <div class="ld-tiles"></div>
+  <div class="ld-caus"></div>
+  <div class="ld-fx" id="ld-fx"></div>
+  <svg class="ld-vac" aria-hidden="true">
+    <path id="ld-hoseA" fill="none" stroke="#0c447d" stroke-width="10" stroke-linecap="round"></path>
+    <path id="ld-hoseB" fill="none" stroke="#7cd0f2" stroke-width="10" stroke-dasharray="3 9" opacity=".7"></path>
+    <path id="ld-poleO" fill="none" stroke="#0c447d" stroke-width="10" stroke-linecap="round"></path>
+    <path id="ld-poleM" fill="none" stroke="#dbeaf5" stroke-width="6" stroke-linecap="round"></path>
+    <path id="ld-poleC" fill="none" stroke="#0a7fae" stroke-width="10"></path>
+    <path id="ld-route" fill="none" stroke="none"></path>
+    <g id="ld-head" opacity="0">
+      <ellipse cx="2" cy="6" rx="26" ry="46" fill="#071a2e" opacity=".26"></ellipse>
+      <path d="M-16 -42 H9 Q21 -42 21 -30 V30 Q21 42 9 42 H-16 Q-21 42 -21 36 V-36 Q-21 -42 -16 -42 Z" fill="#0c447d" stroke="#bfe6f6" stroke-width="2.5"></path>
+      <path d="M-9 -34 V34 M-1 -34 V34 M7 -34 V34" stroke="#071a2e" stroke-width="3" stroke-linecap="round" opacity=".55"></path>
+      <path d="M23 -39 V39" stroke="#e9f4fb" stroke-width="5" stroke-linecap="round" stroke-dasharray="1.6 3.2"></path>
+      <rect x="-24" y="-40" width="6" height="9" rx="2" fill="#071a2e"></rect>
+      <rect x="-24" y="31" width="6" height="9" rx="2" fill="#071a2e"></rect>
+      <rect x="-34" y="-6" width="16" height="12" rx="3" fill="#dbeaf5" stroke="#0c447d" stroke-width="2.5"></rect>
+      <rect x="-40" y="-8" width="7" height="16" rx="3" fill="#0a7fae" stroke="#0c447d" stroke-width="2"></rect>
+      <circle cx="-3" cy="0" r="11" fill="#dbeaf5" stroke="#0c447d" stroke-width="3"></circle>
+      <circle cx="-3" cy="0" r="4.5" fill="#0c447d"></circle>
+    </g>
+  </svg>
+
+  <div class="ld-seal" aria-hidden="true">
+    <svg viewBox="0 0 132 132" aria-hidden="true">
+      <defs><path id="ld-ring" d="M66 66 m-52 0 a52 52 0 1 1 104 0 a52 52 0 1 1 -104 0"></path></defs>
+      <text style="fill:#0c447d;font-size:11.5px;font-weight:700;letter-spacing:.17em;text-transform:uppercase">
+        <textPath href="#ld-ring" textLength="323" lengthAdjust="spacing"><tspan style="fill:#0a7fae">Servicio integral</tspan> · Samuel Piscinas ·</textPath>
+      </text>
+    </svg>
+    <Image src={images.isotipo} alt="" width={120} loading="eager" />
+  </div>
+
+  <div class="ld-count" aria-hidden="true">
+    <svg viewBox="0 0 100 100" aria-hidden="true">
+      <circle class="bg" cx="50" cy="50" r="46"></circle>
+      <circle class="fg" id="ld-ringfg" cx="50" cy="50" r="46"></circle>
+    </svg>
+    <span class="ld-num"><span id="ld-num">0</span><small>%</small></span>
+  </div>
+  <p class="ld-msg" id="ld-msg" aria-hidden="true">Agregando cloro…</p>
+</div>
+
+<style is:global>
+  /* Oculta por defecto: sólo se ve si el script de arriba marcó la primera visita */
+  #loader { display: none; }
+  html[data-loading] { overflow: hidden; }
+  html[data-loading] #loader { display: flex; }
+  /* La entrada del hero espera a que la pantalla de carga termine */
+  html[data-loading] .enter { animation-play-state: paused; }
+
+  .ld { position: fixed; inset: 0; z-index: 100; overflow: hidden; background: #071a2e; color: #fff; flex-direction: column; align-items: center; justify-content: center; gap: clamp(10px, 2.4vw, 18px); isolation: isolate; --dur: 5.8s; height: 100dvh; }
+  .ld.ld-out { animation: ld-lift 0.9s cubic-bezier(0.77, 0, 0.175, 1) forwards; }
+  @keyframes ld-lift { to { transform: translateY(-101%); } }
+  .ld-dirty { position: absolute; inset: 0; z-index: -4; background: radial-gradient(120% 90% at 30% 20%, #6d7f3b, #47592f 60%, #2f4026); }
+  @property --ld-r { syntax: '<percentage>'; inherits: true; initial-value: 0%; }
+  .ld-clean { position: absolute; inset: 0; z-index: -3; background: radial-gradient(110% 90% at 50% 40%, #5cc6ee, #1a9bd0 55%, #0a7fae); --ld-r: 0%; -webkit-mask-image: radial-gradient(circle at 50% 46%, #000 var(--ld-r), transparent calc(var(--ld-r) + 16%)); mask-image: radial-gradient(circle at 50% 46%, #000 var(--ld-r), transparent calc(var(--ld-r) + 16%)); }
+  .ld-run .ld-clean { animation: ld-clear calc(var(--dur) - 0.6s) cubic-bezier(0.45, 0.05, 0.3, 1) 0.6s forwards; }
+  @keyframes ld-clear { to { --ld-r: 92%; } }
+  .ld-tiles { position: absolute; inset: 0; z-index: -2; opacity: 0.18; background: linear-gradient(rgb(255 255 255 / 0.7) 1px, transparent 1px) 0 0 / 54px 54px, linear-gradient(90deg, rgb(255 255 255 / 0.7) 1px, transparent 1px) 0 0 / 54px 54px; }
+  .ld-caus { position: absolute; inset: -20%; z-index: -1; mix-blend-mode: soft-light; opacity: 0; background: radial-gradient(ellipse 120px 60px at 20% 30%, #fff, transparent 70%), radial-gradient(ellipse 160px 80px at 70% 20%, #fff, transparent 70%), radial-gradient(ellipse 140px 70px at 50% 70%, #fff, transparent 70%), radial-gradient(ellipse 100px 50px at 85% 75%, #fff, transparent 70%), radial-gradient(ellipse 130px 60px at 12% 80%, #fff, transparent 70%); background-size: 50% 50%; }
+  .ld-run .ld-caus { animation: ld-drift 6s ease-in-out infinite alternate, ld-show var(--dur) ease-in forwards; }
+  @keyframes ld-drift { from { transform: translate(-3%, -2%) scale(1); } to { transform: translate(3%, 2%) scale(1.08); } }
+  @keyframes ld-show { to { opacity: 0.75; } }
+  .ld-speck { position: absolute; z-index: -1; border-radius: 50% 10% 50% 10%; background: #2c3a1c; opacity: 0.8; animation: ld-float 5s ease-in-out infinite alternate, ld-gone 0.5s ease forwards; animation-play-state: running, paused; }
+  .ld-run .ld-speck { animation-play-state: running, running; }
+  @keyframes ld-float { from { transform: translate(0, 0) rotate(0); } to { transform: translate(14px, -10px) rotate(40deg); } }
+  @keyframes ld-gone { to { opacity: 0; transform: scale(0.3); } }
+  .ld-bub { position: absolute; bottom: -20px; z-index: -1; border-radius: 50%; border: 1.5px solid rgb(255 255 255 / 0.7); background: rgb(255 255 255 / 0.12); opacity: 0; }
+  .ld-run .ld-bub { animation: ld-rise var(--d) linear var(--w) infinite; }
+  @keyframes ld-rise { 0% { transform: translate(0, 0); opacity: 0; } 15% { opacity: 0.9; } 100% { transform: translate(var(--x), -115dvh); opacity: 0; } }
+  .ld-fx { position: absolute; inset: 0; z-index: -1; pointer-events: none; }
+  .ld-fx i { position: absolute; display: block; will-change: transform, opacity; }
+  .ld-gran { width: 9px; height: 9px; border-radius: 3px; background: #f4fbff; box-shadow: 0 0 0 1px rgb(255 255 255 / 0.6), 0 6px 10px rgb(7 26 46 / 0.35); }
+  .ld-ripple { border: 2px solid rgb(255 255 255 / 0.85); border-radius: 50%; }
+  .ld-puff { border-radius: 50%; background: radial-gradient(circle, rgb(255 255 255 / 0.85), rgb(160 226 250 / 0.5) 45%, transparent 70%); }
+  .ld-vac { position: absolute; inset: 0; width: 100%; height: 100%; z-index: -1; overflow: visible; }
+  #ld-hoseB { animation: ld-flow 0.9s linear infinite; }
+  @keyframes ld-flow { to { stroke-dashoffset: 12; } }
+  .ld-seal { position: relative; width: clamp(112px, 18vw, 168px); aspect-ratio: 1; border-radius: 50%; background: #fff; display: grid; place-items: center; box-shadow: 0 0 0 6px rgb(255 255 255 / 0.3), 0 18px 40px -14px rgb(7 26 46 / 0.6); animation: ld-breath 2.4s ease-in-out infinite; }
+  .ld-seal svg { position: absolute; inset: 0; width: 100%; height: 100%; animation: ld-spin 14s linear infinite; }
+  .ld-seal img { width: 38%; height: auto; position: relative; }
+  @keyframes ld-spin { to { transform: rotate(360deg); } }
+  @keyframes ld-breath { 50% { transform: scale(1.04); } }
+  .ld-count { position: relative; width: clamp(64px, 10vw, 92px); height: clamp(64px, 10vw, 92px); display: grid; place-items: center; }
+  .ld-count svg { position: absolute; inset: 0; width: 100%; height: 100%; transform: rotate(-90deg); }
+  .ld-count circle { fill: none; stroke-width: 5; }
+  .ld-count .bg { stroke: rgb(255 255 255 / 0.25); }
+  .ld-count .fg { stroke: #fff; stroke-linecap: round; stroke-dasharray: 289; stroke-dashoffset: 289; }
+  .ld-num { font-family: var(--font-display); font-weight: 700; font-size: clamp(1.5rem, 4vw, 2.1rem); line-height: 1; text-shadow: 0 2px 12px rgb(7 26 46 / 0.5); font-variant-numeric: tabular-nums; }
+  .ld-num small { font-size: 0.42em; font-weight: 600; margin-left: 1px; opacity: 0.85; }
+  .ld-msg { margin: 0; font-weight: 600; font-size: clamp(0.95rem, 2vw, 1.15rem); text-shadow: 0 1px 10px rgb(7 26 46 / 0.6); text-align: center; padding-inline: 16px; min-height: 1.5em; }
+  @media (prefers-reduced-motion: reduce) {
+    .ld-seal, .ld-seal svg, .ld-caus, .ld-speck, .ld-bub, #ld-hoseB { animation: none !important; }
+    .ld-run .ld-clean { animation-duration: 0.01s !important; }
+    .ld.ld-out { animation: ld-fade 0.5s forwards; }
+    @keyframes ld-fade { to { opacity: 0; } }
+  }
+</style>
+
+<script>
+  const root = document.documentElement;
+  const loader = document.getElementById('loader');
+
+  if (loader && root.hasAttribute('data-loading')) {
+    const $ = (id: string) => document.getElementById(id)!;
+    const num = $('ld-num'), msg = $('ld-msg'), ringFg = $('ld-ringfg') as unknown as SVGElement;
+    const fx = $('ld-fx'), head = $('ld-head'), route = $('ld-route') as unknown as SVGPathElement;
+    const hoseA = $('ld-hoseA'), hoseB = $('ld-hoseB'), poleO = $('ld-poleO'), poleM = $('ld-poleM'), poleC = $('ld-poleC');
+    const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const DUR = 5800, TO = 5100, MAX = 10000;
+    const rnd = (a: number, b: number) => a + Math.random() * (b - a);
+    const timers: number[] = [];
+    let raf = 0, cnt = 0, loaded = document.readyState === 'complete', finished = false, animDone = false;
+    let specks: HTMLElement[] = [];
+
+    const paint = (p: number) => {
+      num.textContent = String(Math.round(p));
+      ringFg.style.strokeDashoffset = String(289 * (1 - p / 100));
+    };
+
+    // Suciedad y burbujas
+    const build = () => {
+      for (let i = 0; i < 20; i++) {
+        const x = rnd(4, 94), y = rnd(30, 92), s = rnd(9, 20);
+        const d = Math.hypot((x - 50) / 50, (y - 46) / 46) / 1.2;
+        const el = document.createElement('i');
+        el.className = 'ld-speck';
+        el.style.cssText = `left:${x}%;top:${y}%;width:${s}px;height:${s * 0.7}px;animation-delay:0s,${(Math.min(d, 1) * 0.8 * DUR + 500).toFixed(0)}ms;animation-duration:${rnd(3, 6).toFixed(1)}s,.5s`;
+        loader.appendChild(el);
+        specks.push(el);
+      }
+      for (let i = 0; i < 14; i++) {
+        const s = rnd(6, 16), el = document.createElement('i');
+        el.className = 'ld-bub';
+        el.style.cssText = `left:${rnd(4, 96)}%;width:${s}px;height:${s}px;--x:${rnd(-30, 30).toFixed(0)}px;--d:${rnd(3.4, 6).toFixed(1)}s;--w:${rnd(0.8, 4).toFixed(1)}s`;
+        loader.appendChild(el);
+      }
+    };
+
+    // Cloro: gránulos que caen (de grandes a chicos), salpican y se disuelven
+    const chlorine = (W: number, H: number) => {
+      for (let i = 0; i < 11; i++) {
+        const cx = W * 0.5 + rnd(-0.16, 0.16) * W, cy = H * 0.46 + rnd(-0.14, 0.14) * H, t = 120 + i * 95;
+        const mk = (cls: string, css: string) => { const e = document.createElement('i'); e.className = cls; e.style.cssText = css; return e; };
+        const g = mk('ld-gran', `left:${cx - 4}px;top:${cy - 4}px;opacity:0`);
+        const ring = mk('ld-ripple', `left:${cx - 22}px;top:${cy - 22}px;width:44px;height:44px;opacity:0`);
+        const puff = mk('ld-puff', `left:${cx - 40}px;top:${cy - 40}px;width:80px;height:80px;opacity:0`);
+        fx.append(puff, ring, g);
+        g.animate([{ transform: 'scale(3.4) translateY(-18px)', opacity: 0 }, { transform: 'scale(1)', opacity: 1, offset: 0.85 }, { transform: 'scale(.35)', opacity: 0 }], { delay: t, duration: 700, easing: 'cubic-bezier(.55,0,1,.45)', fill: 'both' });
+        ring.animate([{ transform: 'scale(.2)', opacity: 0.9 }, { transform: 'scale(2.6)', opacity: 0 }], { delay: t + 560, duration: 950, easing: 'cubic-bezier(.23,1,.32,1)', fill: 'both' });
+        puff.animate([{ transform: 'scale(.3)', opacity: 0.8 }, { transform: 'scale(1.8)', opacity: 0 }], { delay: t + 560, duration: 1500, easing: 'ease-out', fill: 'both' });
+      }
+    };
+
+    const clearVac = () => {
+      head.setAttribute('opacity', '0');
+      [hoseA, hoseB, poleO, poleM, poleC].forEach((e) => e.setAttribute('d', ''));
+    };
+
+    // Aspiradora manual: el cabezal sube y baja en columnas, de izquierda a derecha, sin girar
+    const vacuum = (W: number, H: number) => {
+      const cols = Math.max(3, Math.min(5, Math.round(W / 210)));
+      const yTop = H * 0.2, yBot = H * 0.88, out = -H * 0.18;
+      const xs = Array.from({ length: cols }, (_, i) => W * (0.1 + (0.8 * i) / (cols - 1)));
+      const pts: number[][] = [[xs[0], out]];
+      xs.forEach((x, i) => {
+        pts.push([x, i % 2 === 0 ? yBot : yTop]);
+        if (i < cols - 1) pts.push([xs[i + 1], i % 2 === 0 ? yBot : yTop]);
+      });
+      pts.push([xs[cols - 1], out]);
+      const R = Math.min(46, W * 0.06), dist = (p: number[], q: number[]) => Math.hypot(q[0] - p[0], q[1] - p[1]);
+      let d = `M${pts[0][0]} ${pts[0][1]}`;
+      for (let i = 1; i < pts.length - 1; i++) {
+        const A = pts[i - 1], B = pts[i], C = pts[i + 1], r = Math.min(R, dist(A, B) / 2, dist(B, C) / 2);
+        const u = [(B[0] - A[0]) / dist(A, B), (B[1] - A[1]) / dist(A, B)], v = [(C[0] - B[0]) / dist(B, C), (C[1] - B[1]) / dist(B, C)];
+        d += ` L${B[0] - u[0] * r} ${B[1] - u[1] * r} Q${B[0]} ${B[1]} ${B[0] + v[0] * r} ${B[1] + v[1] * r}`;
+      }
+      d += ` L${pts[pts.length - 1][0]} ${pts[pts.length - 1][1]}`;
+      route.setAttribute('d', d);
+      const total = route.getTotalLength(), START = 900, END = 5200, anchor = [W * 1.03, -14];
+      const ease = (k: number) => 0.5 - 0.5 * Math.cos(Math.PI * k);
+      const t0 = performance.now();
+      const frame = (now: number) => {
+        const k = (now - t0 - START) / (END - START);
+        if (k < 0) { raf = requestAnimationFrame(frame); return; }
+        const p = route.getPointAtLength(ease(Math.min(k, 1)) * total);
+        head.setAttribute('transform', `translate(${p.x} ${p.y}) rotate(90)`);
+        head.setAttribute('opacity', '1');
+        const L = H * 1.3, tilt = (-(p.x - W * 0.5) / W) * 0.3, ux = Math.sin(tilt), uy = -Math.cos(tilt);
+        const pole = `M${p.x} ${p.y - 3} L${p.x + ux * L} ${p.y - 3 + uy * L}`;
+        poleO.setAttribute('d', pole); poleM.setAttribute('d', pole);
+        const c = (f: number) => `M${p.x + ux * L * f} ${p.y - 3 + uy * L * f} l${ux * 12} ${uy * 12}`;
+        poleC.setAttribute('d', c(0.2) + c(0.4));
+        const hx = p.x, hy = p.y - 40;
+        const hose = `M${anchor[0]} ${anchor[1]} C${anchor[0] - (anchor[0] - hx) * 0.05} ${anchor[1] + (hy - anchor[1]) * 0.8} ${hx + (anchor[0] - hx) * 0.6} ${hy + 60} ${hx} ${hy}`;
+        hoseA.setAttribute('d', hose); hoseB.setAttribute('d', hose);
+        for (const s of specks) {
+          if (s.dataset.s) continue;
+          const r = s.getBoundingClientRect(), sx = r.left + r.width / 2, sy = r.top + r.height / 2;
+          if (Math.abs(sx - p.x) < 46 && Math.abs(sy - p.y) < 26) {
+            s.dataset.s = '1';
+            s.animate([{ opacity: 0.8 }, { transform: `translate(${p.x - sx}px,${p.y - sy}px) scale(.15) rotate(160deg)`, opacity: 0 }], { duration: 380, easing: 'cubic-bezier(.4,0,.2,1)', fill: 'forwards' });
+          }
+        }
+        if (k < 1.05) raf = requestAnimationFrame(frame);
+        else clearVac();
+      };
+      raf = requestAnimationFrame(frame);
+    };
+
+    // Cierre: la pantalla sube y el sitio queda libre (la entrada del hero arranca recién ahora)
+    const finish = () => {
+      if (finished) return;
+      finished = true;
+      timers.forEach(clearTimeout);
+      cancelAnimationFrame(raf); cancelAnimationFrame(cnt);
+      paint(100);
+      msg.textContent = 'Lista para disfrutar';
+      setTimeout(() => {
+        loader.classList.add('ld-out');
+        const done = () => { root.removeAttribute('data-loading'); loader.remove(); };
+        loader.addEventListener('animationend', done, { once: true });
+        setTimeout(done, 1500);
+      }, 350);
+    };
+    const tryFinish = () => { if (animDone && loaded) finish(); };
+
+    if (!loaded) addEventListener('load', () => { loaded = true; tryFinish(); }, { once: true });
+    // Seguro: nunca dejar al visitante atrapado
+    timers.push(window.setTimeout(finish, MAX));
+
+    const W = loader.clientWidth, H = loader.clientHeight;
+    loader.classList.add('ld-run');
+    if (reduce) {
+      // Sin movimiento: pantalla estática (agua ya limpia, 100 %) durante un momento, para que se vea
+      paint(100);
+      msg.textContent = 'Lista para disfrutar';
+      timers.push(window.setTimeout(() => { animDone = true; tryFinish(); }, 1600));
+    } else {
+      build(); chlorine(W, H); vacuum(W, H);
+      timers.push(window.setTimeout(() => { msg.textContent = 'Aspirando el fondo…'; }, 1400));
+      const FROM = 500, t1 = performance.now();
+      const step = (now: number) => {
+        const k = Math.min(Math.max((now - t1 - FROM) / (TO - FROM), 0), 1);
+        // si el sitio aún no cargó, el porcentaje espera en 99
+        paint(Math.min(100 * (0.5 - 0.5 * Math.cos(Math.PI * k)), loaded ? 100 : 99));
+        if (k < 1) cnt = requestAnimationFrame(step);
+        else { animDone = true; if (loaded) tryFinish(); else cnt = requestAnimationFrame(wait); }
+      };
+      const wait = () => { if (!loaded) cnt = requestAnimationFrame(wait); };
+      cnt = requestAnimationFrame(step);
+    }
+  }
+</script>
