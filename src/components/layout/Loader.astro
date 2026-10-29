@@ -1,26 +1,18 @@
 ---
-// Pantalla de carga de la primera visita: el agua turbia se limpia (cloro + aspiradora manual) mientras
+// Pantalla de carga que se muestra en cada entrada al sitio: el agua turbia se limpia (cloro + aspiradora manual) mientras
 // el porcentaje sube de 0 a 100. El contenido del sitio sigue en el HTML detrás, así que los buscadores lo leen igual.
-// Se muestra sólo una vez por navegador (localStorage), nunca a rastreadores; con "reducir movimiento" se ve estática,
-// y un seguro la cierra a los 10 s pase lo que pase. Para verla de nuevo: añadir ?loader a la URL (en desarrollo aparece siempre; ?noloader la salta).
+// Se muestra en cada carga, salvo a rastreadores; con "reducir movimiento" se ve estática, y un seguro la cierra
+// a los 10 s pase lo que pase. Para saltarla: añadir ?noloader a la URL.
 import { Image } from 'astro:assets';
 import { images, site } from '../../data/site';
 ---
 
-<!-- Decide antes del primer pintado: sin esto, quien ya la vio parpadearía con la pantalla de carga -->
-<script is:inline define:vars={{ dev: import.meta.env.DEV }}>
+<!-- Se decide antes del primer pintado, para que el contenido no aparezca un instante antes de la pantalla -->
+<script is:inline>
   (function () {
-    var force = /[?&]loader\b/.test(location.search);
     var bot = /bot|crawl|spider|lighthouse|pagespeed|gtmetrix/i.test(navigator.userAgent);
-    var seen = null;
-    try {
-      seen = localStorage.getItem('sp-loader-v1');
-    } catch (e) {
-      /* sin almacenamiento (modo privado estricto): se muestra, no hay dónde recordarlo */
-    }
-    // En desarrollo se ve en cada carga (para poder ajustarla); ?noloader la salta.
     var skip = /[?&]noloader\b/.test(location.search);
-    if (!bot && !skip && (force || dev || !seen)) document.documentElement.setAttribute('data-loading', '');
+    if (!bot && !skip) document.documentElement.setAttribute('data-loading', '');
   })();
 </script>
 
@@ -247,7 +239,6 @@ import { images, site } from '../../data/site';
       cancelAnimationFrame(raf); cancelAnimationFrame(cnt);
       paint(100);
       msg.textContent = 'Lista para disfrutar';
-      try { localStorage.setItem('sp-loader-v1', '1'); } catch { /* sin almacenamiento */ }
       setTimeout(() => {
         loader.classList.add('ld-out');
         const done = () => { root.removeAttribute('data-loading'); loader.remove(); };

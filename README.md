@@ -20,7 +20,7 @@ Requiere Node >= 22.12 y [bun](https://bun.sh).
 - `src/components/`: secciones, tarjetas, formulario y layout.
 - `src/pages/privacidad.astro`: política de privacidad (Ley 18.331); revisar antes de publicar.
 - `src/pages/404.astro`, `sitemap.xml.ts`, `robots.txt.ts`, `llms.txt.ts`: página 404, sitemap, robots (con rastreadores de IA permitidos) y resumen para asistentes de IA.
-- `src/components/layout/Loader.astro`: pantalla de carga de la primera visita (se recuerda en `localStorage`). Para verla de nuevo, añadir `?loader` a la URL.
+- `src/components/layout/Loader.astro`: pantalla de carga que aparece en cada entrada (no a rastreadores). Para saltarla, añadir `?noloader` a la URL.
 - `public/og-image.jpg`: imagen para compartir (1200×630). Regenerarla cuando haya fotos reales.
 - `PRODUCT.md` y `DESIGN.md`: contexto de producto y sistema visual.
 
