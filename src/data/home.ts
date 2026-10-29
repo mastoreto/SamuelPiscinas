@@ -1,7 +1,6 @@
 // Contenido de la home, separado del marcado para poder editarlo sin tocar componentes.
 // TODO(cliente): todo lo que va entre [corchetes] es un dato pendiente de confirmar.
 
-import type { IconName } from '../components/ui/Icon.astro';
 
 // Lecturas de ejemplo del informe de visita. La posición de cada marca se calcula
 // sobre la escala [min, max]; el tramo [okMin, okMax] es el rango correcto.
@@ -23,7 +22,6 @@ export const sampleReadings: Reading[] = [
 
 export const pillars = {
   preventive: {
-    icon: 'shield-check',
     title: 'Mantenimiento a medida',
     description:
       'Un plan de visitas ajustado a tu piscina, con los trabajos que realmente necesita.',
@@ -34,26 +32,18 @@ export const pillars = {
     ],
   },
   water: {
-    icon: 'beaker',
     title: 'Tratamiento del agua según cada caso',
     description:
       'Tomamos una muestra, medimos y corregimos con el producto justo hasta que cada valor vuelve a su rango.',
   },
   attention: {
-    icon: 'user',
     title: 'Seguimiento personal de Samuel',
     description:
       'Hablás directamente con Samuel, que conoce tu piscina y hace el seguimiento de cada visita.',
-    bullets: [
-      'Consultas directas por WhatsApp',
-      'Seguimiento y registro de cada visita',
-      'Planes para casas y clubes deportivos',
-    ],
   },
 } as const;
 
 export type Service = {
-  icon: IconName;
   title: string;
   description: string;
   badge?: string;
@@ -61,24 +51,20 @@ export type Service = {
 
 export const services: Service[] = [
   {
-    icon: 'refresh',
     title: 'Mantenimiento periódico',
     description:
       'Limpieza de fondo, skimmers, nivel de agua, bomba y filtros. Revisión del sistema hidráulico en general.',
   },
   {
-    icon: 'beaker',
     title: 'Tratamiento de agua',
     description: 'Tratamiento de choque, filtrado y aspirado hasta dejarla cristalina.',
   },
   {
-    icon: 'cog',
     title: 'Instalaciones',
     description:
       'Instalación y mantenimiento de sistemas hidráulicos, cloradores, bombas de calor u otros equipamientos.',
   },
   {
-    icon: 'lightning-bolt',
     title: 'Averías y equipos',
     description: 'Bombas con fugas o ruido, cambio de arena o vidrio, focos LED y cuadros.',
   },
@@ -145,8 +131,8 @@ export const footerColumns = [
   {
     title: 'Samuel Piscinas',
     links: [
-      { href: '#por-que-samuel', label: 'Por qué Samuel' },
-      { href: '#trabajos', label: 'Trabajos' },
+      { href: '#como-trabajamos', label: 'Cómo trabajamos' },
+      { href: '#trabajos', label: 'Nuestros trabajos' },
       { href: '#contacto', label: 'Presupuesto' },
     ],
   },
@@ -177,7 +163,19 @@ export const faqs = [
     a: 'Sí. Armamos planes con libro de registro al día, controles del agua y analíticas de laboratorio.',
   },
   {
+    q: '¿Instalan y mantienen bombas de calor para piscina?',
+    a: 'Sí. Instalamos y mantenemos bombas de calor, sistemas hidráulicos, cloradores y otros equipamientos de la piscina.',
+  },
+  {
+    q: '¿Cada cuánto hay que cambiar la arena del filtro?',
+    a: 'Depende del uso y de la calidad del agua. Recomendamos arena de cuarzo por su mayor durabilidad: así se cambia menos seguido y el filtrado se mantiene bueno.',
+  },
+  {
+    q: '¿Trabajan con cloradores salinos?',
+    a: 'Sí. Instalamos y mantenemos cloradores salinos y sondas de pH, y medimos y ajustamos el tratamiento del agua en cada visita.',
+  },
+  {
     q: '¿Cómo hago una consulta?',
-    a: 'Por WhatsApp o con el formulario de presupuesto. Respondemos en 24 horas laborables, de lunes a viernes de 8 a 18 h.',
+    a: 'Por WhatsApp o con el formulario de presupuesto. Atendemos de lunes a viernes, de 8 a 18 h.',
   },
 ] as const;

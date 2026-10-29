@@ -1,13 +1,54 @@
 ---
-type Props = { items: readonly string[] };
-const { items } = Astro.props;
+// Con `animated`, cada punto se convierte en un tilde que se marca uno a uno en bucle.
+type Props = { items: readonly string[]; animated?: boolean };
+const { items, animated = false } = Astro.props;
 ---
 
-<ul class="space-y-2.5 text-sm font-semibold text-slate-700">
+<ul class="space-y-2.5 text-sm font-semibold text-ink-700" data-checklist={animated ? '' : undefined}>
   {items.map((item) => (
     <li class="flex items-center gap-2.5">
-      <span class="bg-brand-cyan size-1.5 shrink-0 rounded-full" />
-      {item}
+      {animated ? (
+        <span data-check class="bg-cyan-700 flex size-5 shrink-0 items-center justify-center rounded-full text-white">
+          <svg viewBox="0 0 24 24" class="size-3" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>
+        </span>
+      ) : (
+        <span class="bg-brand-cyan size-1.5 shrink-0 rounded-full" />
+      )}
+      <span data-label>{item}</span>
     </li>
   ))}
 </ul>
+
+{animated && (
+  <script>
+    import { animate } from 'motion';
+
+    const list = document.querySelector<HTMLElement>('[data-checklist]');
+    if (list && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      const items = [...list.querySelectorAll<HTMLElement>('li')].map((li) => ({
+        check: li.querySelector<HTMLElement>('[data-check]')!,
+        label: li.querySelector<HTMLElement>('[data-label]')!,
+      }));
+      const wait = (s: number) => new Promise((r) => setTimeout(r, s * 1000));
+
+      const loop = async () => {
+        for (;;) {
+          // Todo pendiente: tildes ocultos y textos atenuados
+          items.forEach(({ check, label }) => { check.style.opacity = '0'; label.style.opacity = '0.45'; });
+          await wait(0.5);
+          // Se marcan de a uno
+          for (const { check, label } of items) {
+            animate(label, { opacity: 1 }, { duration: 0.4 });
+            await animate(check, { opacity: [0, 1], transform: ['scale(0.4)', 'scale(1)'] }, { type: 'spring', duration: 0.5, bounce: 0.35 });
+            await wait(0.55);
+          }
+          await wait(3);
+        }
+      };
+
+      new IntersectionObserver(([e], io) => {
+        if (e.isIntersecting) { io.disconnect(); loop(); }
+      }).observe(list);
+    }
+  </script>
+)}

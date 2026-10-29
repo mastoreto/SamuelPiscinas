@@ -1,20 +1,49 @@
 ---
-// Animación del proceso: muestra → medición → ajuste. El marcado ya está en el estado final
-// (sin JS o con "reducir movimiento" se ve así); el script lo anima en bucle con Motion.
+// Proceso de la visita: la pipeta toma una muestra, la pasa a un tubo, se agrega el reactivo,
+// el color cambia, se miden los valores y se ajustan. El marcado ya está en el estado final (sin JS o con "reducir movimiento"
+// se ve así); el script lo anima en bucle con Motion.
 import { sampleReadings } from '../../data/home';
 
 const pct = (v: number, min: number, max: number) => `${((v - min) / (max - min)) * 100}%`;
+// Pipeta con la punta en el origen (0,0) y el cuerpo hacia arriba; tubo de ensayo a la derecha.
+const pipetteTube = 'M-3.2 -30V-8L-1 0H1L3.2 -8V-30Z';
+const testTube = 'M161 38H179V90a9 9 0 01-18 0Z';
 ---
 
-<div class="flex flex-col gap-3 rounded-2xl border border-white/10 bg-white/5 p-4" data-water-process>
-  <div class="flex items-center gap-3 text-sm font-semibold text-sky-200">
-    <svg viewBox="0 0 24 32" class="h-8 w-6 shrink-0" aria-hidden="true">
-      <defs><clipPath id="vial-clip"><path d="M8 3h8v7l5 15a3 3 0 01-3 4H6a3 3 0 01-3-4l5-15z"></path></clipPath></defs>
-      <rect data-vial-fill x="0" y="14" width="24" height="18" fill="#38bdf8" clip-path="url(#vial-clip)" style="transform-origin:bottom"></rect>
-      <path d="M8 3h8v7l5 15a3 3 0 01-3 4H6a3 3 0 01-3-4l5-15z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"></path>
-    </svg>
-    <span data-status>Agua equilibrada</span>
-  </div>
+<div class="flex flex-col gap-2 rounded-2xl border border-white/10 bg-white/5 p-3.5" data-water-process>
+  <ol class="steps grid grid-cols-4 gap-1.5" data-steps aria-label="Pasos del tratamiento">
+    <li data-state="done">Muestra</li>
+    <li data-state="done">Reactivo</li>
+    <li data-state="done">Medición</li>
+    <li data-state="done">Ajuste</li>
+  </ol>
+
+  <svg viewBox="0 -20 220 142" class="mx-auto h-44 w-full" role="img" aria-label="Una pipeta toma una muestra de agua de la piscina, la pasa a un tubo de ensayo y se le agrega reactivo">
+    <defs>
+      <clipPath id="pipette-clip"><path d={pipetteTube}></path></clipPath>
+      <clipPath id="tube-clip"><path d={testTube}></path></clipPath>
+    </defs>
+
+    <!-- piscina -->
+    <rect x="0" y="70" width="125" height="52" fill="#38bdf8" fill-opacity="0.22"></rect>
+    <path d="M0 70q10-4 21 0t21 0 21 0 21 0 21 0 20 0" fill="none" stroke="#7cd0f2" stroke-width="1.5" stroke-linecap="round"></path>
+    <ellipse data-ripple cx="55" cy="70" rx="20" ry="3.5" fill="none" stroke="#bae6fd" stroke-width="1.5" style="transform-origin:55px 70px;transform:scale(1.7);opacity:0"></ellipse>
+
+    <!-- tubo de ensayo con la muestra y el reactivo -->
+    <rect data-tube-liquid x="161" y="38" width="18" height="61" fill="#f97316" clip-path="url(#tube-clip)" style="transform-origin:0 99px;transform:scaleY(0.55)"></rect>
+    <path d={testTube} fill="#e0f2fe" fill-opacity="0.08" stroke="#e0f2fe" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"></path>
+    {[0, 1, 2].map(() => (
+      <circle data-drop cx="170" cy="14" r="2.4" fill="#fb923c" style="opacity:0"></circle>
+    ))}
+
+    <!-- pipeta -->
+    <g data-pipette style="opacity:0;transform:translate(55px,34px)">
+      <rect data-pipette-liquid x="-3.2" y="-30" width="6.4" height="30" fill="#38bdf8" clip-path="url(#pipette-clip)" style="transform-origin:0 0;transform:scaleY(0)"></rect>
+      <path d={pipetteTube} fill="#e0f2fe" fill-opacity="0.12" stroke="#e0f2fe" stroke-width="1.6" stroke-linejoin="round"></path>
+      <rect x="-4.4" y="-33" width="8.8" height="3.4" rx="1.6" fill="#e0f2fe"></rect>
+      <rect data-bulb x="-5.2" y="-49" width="10.4" height="17" rx="5" fill="#7cd0f2" style="transform-origin:0 -32px"></rect>
+    </g>
+  </svg>
 
   {sampleReadings.map((r) => (
     <div class="grid grid-cols-[4.5rem_1fr_2.5rem] items-center gap-2.5 text-sm text-slate-200" data-reading data-from={r.from} data-to={r.value} data-min={r.min} data-max={r.max}>
@@ -42,43 +71,106 @@ const pct = (v: number, min: number, max: number) => `${((v - min) / (max - min)
   import { animate } from 'motion';
 
   const root = document.querySelector<HTMLElement>('[data-water-process]');
-  const status = root?.querySelector<HTMLElement>('[data-status]');
-  const vial = root?.querySelector<SVGElement>('[data-vial-fill]');
+  const q = <T extends Element>(s: string) => root?.querySelector<T>(s) ?? null;
+  const steps = [...(root?.querySelectorAll<HTMLElement>('[data-steps] li') ?? [])];
+  const pipette = q<SVGGElement>('[data-pipette]');
+  const pLiquid = q<SVGRectElement>('[data-pipette-liquid]');
+  const bulb = q<SVGRectElement>('[data-bulb]');
+  const tubeLiquid = q<SVGRectElement>('[data-tube-liquid]');
+  const ripple = q<SVGEllipseElement>('[data-ripple]');
+  const drops = [...(root?.querySelectorAll<SVGCircleElement>('[data-drop]') ?? [])];
 
-  if (root && status && vial && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  if (root && steps.length && pipette && pLiquid && bulb && tubeLiquid && ripple && !matchMedia('(prefers-reduced-motion: reduce)').matches) {
     const rows = [...root.querySelectorAll<HTMLElement>('[data-reading]')].map((el) => {
       const n = (k: string) => Number(el.dataset[k]);
       const [from, to, min, max] = [n('from'), n('to'), n('min'), n('max')];
       return {
-        from, to,
+        from, to, el,
         pos: (v: number) => `${((v - min) / (max - min)) * 100}%`,
         marker: el.querySelector<HTMLElement>('[data-marker]')!,
         value: el.querySelector<HTMLElement>('[data-value]')!,
       };
     });
     const fmt = (v: number) => v.toLocaleString('es-UY', { maximumFractionDigits: 1, minimumFractionDigits: 1 });
-    const wait = (s: number) => new Promise((r) => setTimeout(r, s * 1000));
-    const show = (visible: boolean) => rows.forEach((r) => animate([r.marker, r.value], { opacity: visible ? 1 : 0 }, { duration: 0.3 }));
+    // Factor global de ritmo: 1 = lento original, menor = más rápido.
+    const T = 0.8;
+    const wait = (s: number) => new Promise((r) => setTimeout(r, s * 1000 * T));
+    // Barra de pasos: los anteriores quedan hechos, el actual se resalta.
+    const setStep = (i: number) => steps.forEach((s, k) => (s.dataset.state = k < i ? 'done' : k === i ? 'on' : ''));
+    // Filas atenuadas con "—" hasta que se miden, para que el recuadro no se vea vacío.
+    const dim = () => rows.forEach((r) => { r.el.style.opacity = '0.4'; r.marker.style.opacity = '0'; r.value.textContent = '—'; });
+    const measure = () => rows.forEach((r) => { r.marker.style.opacity = '1'; r.value.textContent = fmt(r.from); animate(r.el, { opacity: 1 }, { duration: 0.5 * T }); });
+
+    // Posiciones de la punta de la pipeta (unidades del dibujo): sobre el agua, sumergida y sobre el tubo.
+    const at = (x: number, y: number) => `translate(${x}px, ${y}px)`;
+    const [aboveWater, underWater, overTube] = [at(55, 34), at(55, 86), at(170, 30)];
+    const ease = { move: [0.77, 0, 0.175, 1], out: [0.23, 1, 0.32, 1], fall: [0.55, 0, 1, 0.45] } as const;
+    const squeeze = (to: number, duration: number) => animate(bulb, { transform: [`scaleY(${to === 1 ? 0.7 : 1})`, `scaleY(${to})`] }, { duration: duration * T, ease: 'linear' });
+    const fillPipette = (from: number, to: number, duration: number) => animate(pLiquid, { transform: [`scaleY(${from})`, `scaleY(${to})`] }, { duration: duration * T, ease: [0.45, 0, 0.55, 1] });
+    const pulse = () => animate(ripple, { transform: ['scale(0.2)', 'scale(1.7)'], opacity: [0.8, 0] }, { duration: 1.6 * T, ease: ease.out });
+    const [clear, reacted] = ['#38bdf8', '#f97316'];
 
     const loop = async () => {
       for (;;) {
-        // 1. muestra: la probeta se llena
-        status.textContent = 'Tomando muestra…';
-        rows.forEach((r) => { r.marker.style.left = r.pos(r.from); r.value.textContent = fmt(r.from); });
-        show(false);
-        await animate(vial, { transform: ['scaleY(0)', 'scaleY(1)'] }, { duration: 1.2, ease: 'easeOut' });
-        // 2. medición: aparecen los valores iniciales, fuera de rango
-        status.textContent = 'Midiendo…';
-        show(true);
-        await wait(1.3);
-        // 3. ajuste: las marcas se mueven hasta el rango correcto
-        status.textContent = 'Ajustando…';
+        // Estado inicial de la escena
+        setStep(0);
+        rows.forEach((r) => { r.marker.style.left = r.pos(r.from); });
+        dim();
+        pLiquid.style.transform = 'scaleY(0)';
+        bulb.style.transform = 'scaleY(0.7)';
+        tubeLiquid.style.transform = 'scaleY(0)';
+        tubeLiquid.style.opacity = '1';
+        tubeLiquid.style.fill = clear;
+        pipette.style.transform = aboveWater;
+
+        // 1. la pipeta entra al agua con el bulbo apretado
+        await animate(pipette, { opacity: [0, 1] }, { duration: 0.6 * T });
+        const down = animate(pipette, { transform: [aboveWater, underWater] }, { duration: 2 * T, ease: ease.move });
+        wait(1.2).then(pulse);
+        await down;
+        await wait(0.3);
+
+        // 2. suelta el bulbo y la muestra sube por la pipeta
+        await Promise.all([squeeze(1, 1.8), fillPipette(0, 0.75, 1.8)]);
+        await wait(0.4);
+
+        // 3. sale del agua y se lleva la muestra sobre el tubo de ensayo
+        wait(0.6).then(pulse);
+        await animate(pipette, { transform: [underWater, at(55, 34)] }, { duration: 1.6 * T, ease: ease.out });
+        await animate(pipette, { transform: [at(55, 34), overTube] }, { duration: 1.8 * T, ease: ease.move });
+        await wait(0.3);
+
+        // 4. aprieta y la muestra pasa al tubo
+        await Promise.all([
+          squeeze(0.7, 1.8),
+          fillPipette(0.75, 0, 1.8),
+          animate(tubeLiquid, { transform: ['scaleY(0)', 'scaleY(0.55)'] }, { duration: 1.8 * T, ease: [0.45, 0, 0.55, 1] }),
+        ]);
+        await wait(0.3);
+        await animate(pipette, { transform: [overTube, at(170, -14)], opacity: [1, 0] }, { duration: 0.9 * T, ease: ease.out });
+
+        // 5. caen las gotas de reactivo y el agua cambia de color
+        setStep(1);
+        await Promise.all(drops.map((d, i) =>
+          animate(d, { transform: ['translateY(0px)', 'translateY(52px)'], opacity: [1, 1, 0] }, { duration: 0.8 * T, delay: i * 0.7 * T, ease: ease.fall }),
+        ));
+        await animate(tubeLiquid, { fill: [clear, reacted] }, { duration: 2.4 * T, ease: 'easeInOut' });
+        await wait(0.8);
+
+        // 6. se miden los valores de la muestra
+        setStep(2);
+        measure();
+        await wait(2);
+
+        // 7. se ajustan hasta el rango correcto
+        setStep(3);
         await Promise.all(rows.flatMap((r, i) => [
-          animate(r.marker, { left: [r.pos(r.from), r.pos(r.to)] }, { duration: 1.8, delay: i * 0.25, ease: [0.22, 1, 0.36, 1] }),
-          animate(r.from, r.to, { duration: 1.8, delay: i * 0.25, ease: [0.22, 1, 0.36, 1], onUpdate: (v) => (r.value.textContent = fmt(v)) }),
+          animate(r.marker, { left: [r.pos(r.from), r.pos(r.to)] }, { duration: 2.2 * T, delay: i * 0.3 * T, ease: ease.out }),
+          animate(r.from, r.to, { duration: 2.2 * T, delay: i * 0.3 * T, ease: ease.out, onUpdate: (v) => (r.value.textContent = fmt(v)) }),
         ]));
-        status.textContent = 'Agua equilibrada';
-        await wait(3);
+        setStep(4);
+        await wait(3.5);
+        await animate(tubeLiquid, { opacity: [1, 0] }, { duration: 0.6 * T });
       }
     };
 
@@ -88,3 +180,27 @@ const pct = (v: number, min: number, max: number) => `${((v - min) / (max - min)
     }).observe(root);
   }
 </script>
+
+<style>
+  .steps li {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.02em;
+    color: #7f95ab;
+    transition: color 0.4s;
+  }
+  .steps li::before {
+    content: '';
+    height: 4px;
+    border-radius: 2px;
+    background: rgb(255 255 255 / 0.14);
+    transition: background 0.5s;
+  }
+  .steps li[data-state='on'] { color: #fff; }
+  .steps li[data-state='on']::before { background: #4cbbe8; }
+  .steps li[data-state='done'] { color: #a9d9ef; }
+  .steps li[data-state='done']::before { background: #20a9e0; }
+</style>
