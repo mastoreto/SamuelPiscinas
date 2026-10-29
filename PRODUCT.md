@@ -18,7 +18,7 @@ Web de Samuel Piscinas, servicio local de mantenimiento, recuperación de agua v
 
 ## Positioning
 
-Trato directo y personal: se habla siempre con Samuel, que conoce el historial de cada piscina; sin centralitas ni esperas. Presupuesto gratis y precio cerrado antes de empezar; respuesta en 24 h laborables.
+Trato directo y personal: se habla siempre con Samuel, que conoce el historial de cada piscina; sin centralitas ni esperas. Presupuesto gratis y precio cerrado antes de empezar.
 
 ## Operating Context
 
