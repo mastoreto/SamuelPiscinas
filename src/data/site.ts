@@ -12,9 +12,12 @@ import piscinaHero from '../assets/ejemplo/piscina-hero.jpg';
 
 export const site = {
   name: 'Samuel Piscinas',
-  title: 'Samuel Piscinas - Mantenimiento de piscinas en Montevideo, Canelones y San José',
+  // Título ≤ 60 caracteres y descripción ≈ 155: lo que se ve en Google. Palabra clave principal al comienzo.
+  title: 'Mantenimiento de piscinas en Montevideo | Samuel Piscinas',
   description:
-    'Mantenimiento semanal, recuperación de agua verde y reparación de piscinas particulares y de clubes deportivos en Montevideo, Canelones y San José.',
+    'Mantenimiento de piscinas, tratamiento del agua, filtros, cloradores y bombas de calor en Montevideo, Canelones y San José. Presupuesto sin cargo.',
+  ogImage: '/og-image.jpg',
+  ogImageAlt: 'Samuel Piscinas: mantenimiento de piscinas en Montevideo, Canelones y San José',
   locale: 'es_UY',
 } as const;
 
@@ -35,9 +38,11 @@ export const whatsappHref = (text?: string) =>
 
 export const navLinks = [
   { href: '#inicio', label: 'Inicio' },
-  { href: '#por-que-samuel', label: 'Cómo trabajamos' },
+  { href: '#como-trabajamos', label: 'Cómo trabajamos' },
   { href: '#servicios', label: 'Servicios' },
+  { href: '#trabajos', label: 'Nuestros trabajos' },
   { href: '#zonas', label: 'Zonas' },
+  { href: '#preguntas', label: 'Preguntas' },
   { href: '#contacto', label: 'Contacto' },
 ] as const;
 

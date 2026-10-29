@@ -1,14 +1,18 @@
 ---
 import '../styles/global.css';
-import { getImage } from 'astro:assets';
-import { images, site } from '../data/site';
+import { site } from '../data/site';
 
-type Props = { title?: string; description?: string; jsonLd?: Record<string, unknown> };
+type Props = {
+  title?: string;
+  description?: string;
+  jsonLd?: Record<string, unknown>;
+  noindex?: boolean;
+};
 
-const { title = site.title, description = site.description, jsonLd } = Astro.props;
+const { title = site.title, description = site.description, jsonLd, noindex = false } = Astro.props;
 const canonical = new URL(Astro.url.pathname, Astro.site);
-const og = await getImage({ src: images.pool, width: 1200, height: 630, format: 'jpg' });
-const ogImage = new URL(og.src, Astro.site);
+// La imagen para compartir es un archivo propio (1200×630) con marca y mensaje, en /public.
+const ogImage = new URL(site.ogImage, Astro.site);
 ---
 
 <!doctype html>
@@ -19,12 +23,17 @@ const ogImage = new URL(og.src, Astro.site);
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1'} />
+    <meta name="author" content={site.name} />
     <link rel="canonical" href={canonical} />
+    <link rel="alternate" hreflang="es-UY" href={canonical} />
+    <link rel="alternate" hreflang="x-default" href={canonical} />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <link rel="icon" type="image/png" href="/favicon.png" />
-    <meta name="theme-color" content="#0b2347" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <meta name="theme-color" content="#071a2e" />
 
+    <!-- Open Graph: WhatsApp, Facebook, LinkedIn, Telegram y la mayoría de los chats -->
     <meta property="og:type" content="website" />
     <meta property="og:locale" content={site.locale} />
     <meta property="og:site_name" content={site.name} />
@@ -32,10 +41,22 @@ const ogImage = new URL(og.src, Astro.site);
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
     <meta property="og:image" content={ogImage} />
+    <meta property="og:image:secure_url" content={ogImage} />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={site.ogImageAlt} />
+
+    <!-- Tarjeta de X (Twitter) -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+    <meta name="twitter:image:alt" content={site.ogImageAlt} />
+
     {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>}
   </head>
-  <body class="selection:bg-brand-light-cyan bg-white font-sans text-slate-800 antialiased selection:text-white">
+  <body class="selection:bg-brand-light-cyan bg-white font-sans text-ink-700 antialiased selection:text-white">
     <a
       href="#contenido"
       class="bg-brand-navy focus:ring-brand-cyan sr-only rounded-full px-5 py-3 text-sm font-bold text-white focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-60 focus:ring-2"

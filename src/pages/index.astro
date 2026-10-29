@@ -1,5 +1,7 @@
 ---
 import Faq from '../components/sections/Faq.astro';
+import Reveal from '../components/Reveal.astro';
+import Loader from '../components/layout/Loader.astro';
 import Footer from '../components/layout/Footer.astro';
 import Header from '../components/layout/Header.astro';
 import Contact from '../components/sections/Contact.astro';
@@ -9,24 +11,70 @@ import Services from '../components/sections/Services.astro';
 import Zones from '../components/sections/Zones.astro';
 import WhyUs from '../components/sections/WhyUs.astro';
 import Layout from '../layouts/Layout.astro';
-import { site } from '../data/site';
+import { contact, site } from '../data/site';
+import { faqs, services } from '../data/home';
 
-// TODO(cliente): al tener datos reales, añadir telephone y openingHours.
+const base = Astro.site!.href.replace(/\/$/, '');
+const phone = `+${contact.whatsappNumber}`;
+
+// Temas por los que debería aparecer: sirven a los buscadores y a los asistentes de IA.
+const topics = [
+  'mantenimiento de piscinas',
+  'tratamiento del agua de piscinas',
+  'recuperación de agua verde',
+  'filtros de piscina y cambio de arena',
+  'cloradores salinos',
+  'bombas de calor para piscina',
+  'bombas y sistemas hidráulicos de piscina',
+  'piscinas de clubes y comunidades',
+];
+
 const jsonLd = {
   '@context': 'https://schema.org',
-  '@type': 'HomeAndConstructionBusiness',
-  name: site.name,
-  url: Astro.site?.href,
-  description: site.description,
-  address: { '@type': 'PostalAddress', addressCountry: 'UY' },
-  areaServed: ['Montevideo', 'Canelones', 'San José'].map((name) => ({
-    '@type': 'AdministrativeArea',
-    name,
-  })),
+  '@graph': [
+    {
+      '@type': ['HomeAndConstructionBusiness', 'LocalBusiness'],
+      '@id': `${base}/#negocio`,
+      name: site.name,
+      url: `${base}/`,
+      description: site.description,
+      image: `${base}${site.ogImage}`,
+      logo: `${base}/icon-512.png`,
+      telephone: phone,
+      email: contact.email,
+      address: { '@type': 'PostalAddress', addressCountry: 'UY' },
+      areaServed: ['Montevideo', 'Canelones', 'San José'].map((name) => ({ '@type': 'AdministrativeArea', name })),
+      openingHoursSpecification: {
+        '@type': 'OpeningHoursSpecification',
+        dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+        opens: '08:00',
+        closes: '18:00',
+      },
+      sameAs: [`https://instagram.com/${contact.instagramHandle}`],
+      knowsAbout: topics,
+      makesOffer: services.map((service) => ({
+        '@type': 'Offer',
+        itemOffered: { '@type': 'Service', name: service.title, description: service.description, areaServed: 'Montevideo, Canelones y San José' },
+      })),
+    },
+    {
+      '@type': 'WebSite',
+      '@id': `${base}/#sitio`,
+      url: `${base}/`,
+      name: site.name,
+      inLanguage: 'es-UY',
+      publisher: { '@id': `${base}/#negocio` },
+    },
+    {
+      '@type': 'FAQPage',
+      mainEntity: faqs.map((f) => ({ '@type': 'Question', name: f.q, acceptedAnswer: { '@type': 'Answer', text: f.a } })),
+    },
+  ],
 };
 ---
 
 <Layout jsonLd={jsonLd}>
+  <Loader />
   <Header />
   <main id="contenido">
     <Hero />
@@ -39,4 +87,5 @@ const jsonLd = {
     <Contact />
   </main>
   <Footer />
+  <Reveal />
 </Layout>
