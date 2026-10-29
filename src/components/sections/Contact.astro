@@ -14,7 +14,7 @@ const channels = [
 <section id="contacto" class="mx-3 rounded-[2rem] sm:mx-5 lg:rounded-[2.5rem] bg-brand-mist py-20 lg:py-26">
   <Container>
     <!-- Un bloque dividido en dos: a la izquierda la charla, a la derecha lo que hay que completar -->
-    <div class="grid overflow-hidden rounded-[2rem_2rem_2rem_0.5rem] bg-white shadow-[0_24px_60px_-34px_rgb(7_26_46/0.5)] lg:grid-cols-[5fr_7fr]">
+    <div class="grid grid-cols-[minmax(0,1fr)] overflow-hidden rounded-[2rem_2rem_2rem_0.5rem] bg-white shadow-[0_24px_60px_-34px_rgb(7_26_46/0.5)] lg:grid-cols-[5fr_7fr] [&>*]:min-w-0">
       <div class="panel-dark hidden lg:col-start-1 lg:row-start-1 lg:block"></div>
 
       <!-- El contenido de la izquierda acompaña el scroll mientras se completa el formulario -->
@@ -37,7 +37,7 @@ const channels = [
                 class="group flex flex-col gap-0.5 py-3.5 sm:flex-row sm:items-baseline sm:justify-between sm:gap-4"
               >
                 <small class="text-sm tracking-wide text-white/65">{c.label}</small>
-                <span class="text-lg font-bold break-words decoration-[#7cd0f2] decoration-[1.5px] underline-offset-[5px] group-hover:underline group-hover:[text-decoration-style:wavy] sm:text-right">{c.value}</span>
+                <span class="text-lg font-bold max-sm:break-all sm:break-words decoration-[#7cd0f2] decoration-[1.5px] underline-offset-[5px] group-hover:underline group-hover:[text-decoration-style:wavy] sm:text-right">{c.value}</span>
               </a>
             </li>
           ))}
